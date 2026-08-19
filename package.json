@@ -1,0 +1,72 @@
+{
+  "name": "integra-control-pro",
+  "productName": "Integra Control Pro",
+  "version": "1.0.0",
+  "description": "Premium IP control for Integra/Onkyo network receivers — eISCP control, auto-discovery, front-panel replica, Spotify Connect display",
+  "license": "MIT",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "icons": "electron tools/icons.js",
+    "shots": "electron tools/shot.js full && electron tools/shot.js mini",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win nsis",
+    "dist:store": "node tools/msix.js"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.integracontrolpro.app",
+    "productName": "Integra Control Pro",
+    "copyright": "Copyright © 2026",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main/**/*",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "appx",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Integra Control Pro"
+    },
+    "appx": {
+      "identityName": "REPLACE.WithPartnerCenterIdentityName",
+      "publisher": "CN=REPLACE-WITH-PARTNER-CENTER-PUBLISHER-ID",
+      "publisherDisplayName": "REPLACE-WITH-PUBLISHER-DISPLAY-NAME",
+      "applicationId": "AvrControlPro",
+      "displayName": "Integra Control Pro",
+      "backgroundColor": "#0b0c0d",
+      "showNameOnTiles": false,
+      "languages": [
+        "en-US"
+      ],
+      "setBuildNumber": true
+    }
+  }
+}

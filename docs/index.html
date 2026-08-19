@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integra Control Pro — desktop control for Integra network receivers</title>
+<meta name="description" content="A Windows desktop app that controls Integra and Onkyo network receivers over IP. Front-panel replica, full eISCP control, zones, tone, and Spotify Connect artwork. No cloud, no account.">
+<link rel="icon" href="icon.png" type="image/png">
+<meta property="og:title" content="Integra Control Pro">
+<meta property="og:description" content="Your receiver's front panel, on your desktop. Full IP control for Integra and Onkyo network receivers.">
+<meta property="og:image" content="screenshots/full-view.png">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=IBM+Plex+Sans:wght@400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#08090a;
+  --steel-hi:#33383d;
+  --steel:#1e2226;
+  --steel-lo:#101315;
+  --seam:rgba(255,255,255,.075);
+  --vfd:#55ff86;
+  --vfd-dim:#1d5c32;
+  --lamp:#ffb547;
+  --ink:#c7ccd1;
+  --ink-dim:#7d848b;
+  --ink-bright:#eef1f3;
+  --display:'Archivo',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'Share Tech Mono','Consolas',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;color-scheme:dark}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:#0c0e10}
+::-webkit-scrollbar-thumb{background:#282d32;border-radius:6px;border:2px solid #0c0e10}
+::-webkit-scrollbar-thumb:hover{background:#363c42}
+section[id]{scroll-margin-top:86px}
+body{
+  background:var(--void);color:var(--ink);font-family:var(--body);
+  font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--vfd);outline-offset:3px}
+
+/* .wrap owns horizontal gutters only — never the shorthand, or the section
+   and hero rules below would silently cancel it out. */
+.wrap{max-width:1180px;margin:0 auto;padding-left:24px;padding-right:24px}
+@media(max-width:520px){.wrap{padding-left:16px;padding-right:16px}}
+
+/* ── faceplate: every section is a machined panel ────────────── */
+.plate{
+  position:relative;border:1px solid #000;border-radius:12px;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0 1px,rgba(0,0,0,.028) 1px 2px),
+    linear-gradient(180deg,var(--steel-hi) 0%,var(--steel) 16%,var(--steel-lo) 100%);
+  box-shadow:inset 0 1px 0 var(--seam),inset 0 -1px 0 rgba(0,0,0,.6),0 18px 44px rgba(0,0,0,.6);
+}
+.plate::before,.plate::after{
+  content:"";position:absolute;top:11px;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#4a4f54,#15181a 70%);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.06);
+}
+.plate::before{left:11px}
+.plate::after{right:11px}
+
+/* silk-screened label, exactly like the panel legends on the gear */
+.legend{
+  font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--ink-dim);
+  display:flex;align-items:center;gap:14px;
+}
+.legend::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--seam),transparent)}
+
+/* ── rack-ear header ─────────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(180deg,rgba(16,19,21,.97),rgba(8,9,10,.93));
+  border-bottom:1px solid #000;box-shadow:inset 0 1px 0 var(--seam);
+  backdrop-filter:blur(8px);
+}
+.bar{display:flex;align-items:center;gap:14px;height:62px}
+.mark{width:30px;height:30px;flex:none}
+.wordmark{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.16em;color:var(--ink-bright)}
+.wordmark span{color:var(--ink-dim);font-weight:500}
+.bar nav{margin-left:auto;display:flex;align-items:center;gap:8px}
+.bar nav a{
+  font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;color:var(--ink-dim);
+  padding:9px 13px;border-radius:7px;transition:color .15s,background .15s;
+}
+.bar nav a:hover{color:var(--ink-bright);background:rgba(255,255,255,.05)}
+.bar nav a.key{
+  color:#0a1a10;background:linear-gradient(180deg,#6effa0,#33d96b);
+  box-shadow:0 0 18px rgba(85,255,134,.25);
+}
+.bar nav a.key:hover{background:linear-gradient(180deg,#8affb4,#45e87c);color:#08150d}
+@media(max-width:720px){.bar nav a.ghost{display:none}}
+.wordmark,.bar nav a{white-space:nowrap}
+@media(max-width:520px){
+  .bar{gap:10px;height:56px}
+  .mark{width:25px;height:25px}
+  .wordmark{font-size:12px;letter-spacing:.1em}
+  .bar nav a{padding:8px 12px;font-size:10.5px}
+}
+
+/* ── hero: the display comes first, the way it does on the unit ─ */
+.hero{padding-top:56px;padding-bottom:40px}
+.panel-hero{padding:16px}
+.glass{
+  position:relative;overflow:hidden;border-radius:7px;border:1px solid #000;
+  padding:20px 26px 16px;
+  background:
+    radial-gradient(120% 90% at 50% 0%,rgba(85,255,134,.05),transparent 58%),
+    linear-gradient(180deg,#040706,#020403);
+  box-shadow:inset 0 3px 16px rgba(0,0,0,.95),inset 0 0 46px rgba(0,26,10,.6);
+  font-family:var(--mono);color:var(--vfd);
+}
+.glass::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(168deg,rgba(255,255,255,.05) 0%,transparent 26%);
+}
+.glass-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;letter-spacing:.18em}
+.glass-src{text-shadow:0 0 8px rgba(85,255,134,.55)}
+.glass-vol{display:flex;align-items:baseline;gap:8px}
+.glass-vol i{font-style:normal;font-size:10px;color:var(--vfd-dim);letter-spacing:.14em}
+.glass-vol b{font-size:30px;font-weight:400;text-shadow:0 0 10px rgba(85,255,134,.5)}
+.glass-vol u{text-decoration:none;font-size:11px;color:var(--vfd-dim)}
+.marquee{height:34px;overflow:hidden;margin:6px 0 4px}
+.marquee div{
+  display:inline-block;white-space:nowrap;font-size:22px;letter-spacing:.22em;
+  text-shadow:0 0 9px rgba(85,255,134,.5),0 0 24px rgba(85,255,134,.22);
+  animation:slide 17s linear infinite;
+}
+@keyframes slide{0%,8%{transform:translateX(0)}92%,100%{transform:translateX(calc(-100% + 62vw))}}
+/* lamps clip at the panel edge rather than wrapping, like the real display */
+.lamps{display:flex;gap:15px;font-size:9px;letter-spacing:.2em;color:#0e2417;
+  flex-wrap:nowrap;white-space:nowrap;overflow:hidden}
+.lamps span{opacity:0;animation:lamp .5s ease forwards}
+.lamps span.lit{color:var(--vfd);text-shadow:0 0 7px rgba(85,255,134,.6)}
+.lamps span.amber{color:var(--lamp);text-shadow:0 0 7px rgba(255,181,71,.55)}
+.lamps i{flex:1;font-style:normal}
+@keyframes lamp{to{opacity:1}}
+
+.pitch{max-width:760px;margin:38px 0 0}
+h1{
+  font-family:var(--display);font-weight:800;letter-spacing:-.015em;
+  font-size:clamp(2.1rem,5.2vw,3.6rem);line-height:1.06;color:var(--ink-bright);
+}
+h1 em{font-style:normal;color:var(--vfd);text-shadow:0 0 26px rgba(85,255,134,.3)}
+.pitch p{margin-top:18px;font-size:1.07rem;color:var(--ink);max-width:640px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.btn{
+  font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;padding:14px 22px;border-radius:8px;
+  border:1px solid #000;color:var(--ink);
+  background:linear-gradient(180deg,#2e3236,#1a1d20 55%,#141618);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 3px 8px rgba(0,0,0,.5);
+  transition:transform .1s,color .15s;
+}
+.btn:hover{color:#fff;transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{
+  color:#08150d;border-color:#0d2b19;
+  background:linear-gradient(180deg,#6effa0,#31d268);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 24px rgba(85,255,134,.22);
+}
+.note{margin-top:14px;font-size:12.5px;color:var(--ink-dim)}
+
+/* ── sections ────────────────────────────────────────────────── */
+section{padding-top:30px;padding-bottom:30px}
+.shot{margin-top:14px;padding:14px}
+.shot img{border-radius:8px;border:1px solid #000;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+.shot figcaption{
+  margin-top:12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);
+  letter-spacing:.06em;
+}
+
+.head{margin-bottom:20px}
+.head h2{
+  font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3vw,2.1rem);
+  color:var(--ink-bright);letter-spacing:-.01em;margin-top:12px;
+}
+.head p{margin-top:10px;color:var(--ink-dim);max-width:660px}
+
+/* features as a silk-screened legend sheet, not icon cards */
+.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:0;padding:6px 22px 22px}
+@media(max-width:820px){.specs{grid-template-columns:1fr}}
+.spec{padding:20px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.specs>.spec:nth-child(odd){padding-right:34px}
+.specs>.spec:nth-child(even){padding-left:34px;border-left:1px solid rgba(255,255,255,.055)}
+@media(max-width:820px){
+  .specs>.spec:nth-child(odd),.specs>.spec:nth-child(even){padding-left:0;padding-right:0;border-left:0}
+}
+.spec h3{
+  font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--vfd);text-shadow:0 0 12px rgba(85,255,134,.25);
+}
+.spec p{margin-top:8px;font-size:14.5px;color:var(--ink)}
+
+/* two-views block */
+.views{display:grid;grid-template-columns:1fr 480px;gap:26px;align-items:center;padding:26px}
+@media(max-width:980px){.views{grid-template-columns:1fr}}
+.views img{border-radius:10px;border:1px solid #000;box-shadow:0 14px 34px rgba(0,0,0,.6)}
+.views ul{list-style:none;margin-top:16px}
+.views li{padding:9px 0 9px 22px;position:relative;font-size:14.5px}
+.views li::before{
+  content:"";position:absolute;left:0;top:17px;width:7px;height:7px;border-radius:50%;
+  background:var(--vfd);box-shadow:0 0 9px rgba(85,255,134,.6);
+}
+
+/* protocol table — reads like the back-panel spec sticker */
+.table{padding:6px 22px 20px}
+.row{
+  display:grid;grid-template-columns:210px 1fr;gap:18px;
+  padding:13px 0;border-bottom:1px solid rgba(255,255,255,.055);
+}
+.row:last-child{border-bottom:0}
+.row dt{
+  font-family:var(--display);font-size:10.5px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-dim);padding-top:3px;
+}
+.row dd{font-family:var(--mono);font-size:13.5px;color:var(--ink)}
+.row dd b{color:var(--vfd);font-weight:400}
+@media(max-width:700px){.row{grid-template-columns:1fr;gap:4px}}
+
+/* get-it */
+.get{padding:30px 26px;text-align:center}
+.get h2{font-family:var(--display);font-weight:800;font-size:clamp(1.4rem,3vw,2rem);color:var(--ink-bright)}
+.get p{margin:12px auto 0;max-width:560px;color:var(--ink-dim)}
+.get .cta{justify-content:center}
+
+footer{padding:34px 0 56px;border-top:1px solid rgba(255,255,255,.06);margin-top:34px}
+footer p{font-size:12.5px;color:var(--ink-dim);max-width:760px}
+footer p+p{margin-top:10px}
+footer a{color:var(--ink)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+  .lamps span{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <svg class="mark" viewBox="0 0 256 256" aria-hidden="true">
+      <defs>
+        <linearGradient id="st" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3a4046"/><stop offset=".18" stop-color="#242a2e"/><stop offset="1" stop-color="#0e1113"/>
+        </linearGradient>
+        <radialGradient id="cp" cx=".38" cy=".32" r=".75">
+          <stop offset="0" stop-color="#454b51"/><stop offset=".55" stop-color="#252a2f"/><stop offset="1" stop-color="#111417"/>
+        </radialGradient>
+      </defs>
+      <rect width="256" height="256" rx="54" fill="url(#st)"/>
+      <path d="M55.7 210.3A102 102 0 1 1 200.3 210.3" fill="none" stroke="#55ff86" stroke-opacity=".92" stroke-width="8" stroke-linecap="round" transform="rotate(0 128 128)"/>
+      <circle cx="128" cy="128" r="65" fill="url(#cp)" stroke="#000" stroke-opacity=".85" stroke-width="2"/>
+      <line x1="150" y1="106" x2="172" y2="84" stroke="#55ff86" stroke-width="9" stroke-linecap="round"/>
+    </svg>
+    <div class="wordmark">INTEGRA CONTROL <span>PRO</span></div>
+    <nav>
+      <a class="ghost" href="#features">Features</a>
+      <a class="ghost" href="#views">Views</a>
+      <a class="ghost" href="https://github.com/lgbtnewsradio-sudo/integra-control-pro">GitHub</a>
+      <a class="key" href="#get">Get the app</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO: the front panel, first — same as walking up to the unit -->
+  <div class="wrap hero">
+    <div class="plate panel-hero">
+      <div class="glass">
+        <div class="glass-top">
+          <span class="glass-src">NET</span>
+          <span class="glass-vol"><i>VOL</i><b id="vol">46</b><u>−36.0dB</u></span>
+        </div>
+        <div class="marquee"><div>YOUR RECEIVER'S FRONT PANEL &nbsp;•&nbsp; ON YOUR DESKTOP &nbsp;•&nbsp; EVERY INPUT, ZONE, TRIM AND MODE</div></div>
+        <div class="lamps">
+          <span class="lit" style="animation-delay:.15s">DTS NEURAL:X</span>
+          <i></i>
+          <span class="lit" style="animation-delay:.35s">NET</span>
+          <span style="animation-delay:.45s">USB</span>
+          <span class="lit" style="animation-delay:.55s">Z2</span>
+          <span style="animation-delay:.65s">Z3</span>
+          <span class="amber" style="animation-delay:.75s">SLEEP</span>
+          <span style="animation-delay:.85s">MUTING</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pitch">
+      <h1>Control every part of your receiver <em>without reaching for your phone.</em></h1>
+      <p>
+        Integra Control Pro is a Windows desktop app that talks straight to your receiver
+        over the network. It mirrors the front-panel display, exposes every input, listening
+        mode, zone and trim, and shows what Spotify Connect is playing — with artwork.
+        No account, no cloud service, nothing between your PC and the amplifier.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="#get">Download for Windows</a>
+        <a class="btn" href="https://github.com/lgbtnewsradio-sudo/integra-control-pro">View source</a>
+      </div>
+      <p class="note">Built and tested against an Integra DRX-3.4. Free and open source.</p>
+    </div>
+  </div>
+
+  <!-- FULL VIEW -->
+  <section class="wrap">
+    <figure class="plate shot">
+      <img src="screenshots/full-view.png" width="1440" height="1191"
+           alt="The full window: front-panel display strip across the top, input and listening-mode selectors on the left, Spotify Connect player with album art in the centre, master volume knob and Zone 2/3 controls on the right, and tone faders, navigation pad, tuner and connection panels along the bottom.">
+      <figcaption>The full window — every control the receiver exposes, on one screen.</figcaption>
+    </figure>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="wrap" id="features">
+    <div class="head">
+      <div class="legend">What it does</div>
+      <h2>Built for the way receivers actually work</h2>
+      <p>
+        Everything here talks the receiver's own protocol, so the app and the front panel
+        never disagree — turn the physical knob and the window follows it instantly.
+      </p>
+    </div>
+
+    <div class="plate specs">
+      <div class="spec">
+        <h3>Finds the receiver by itself</h3>
+        <p>A network broadcast locates the unit on launch and remembers it. If your network blocks discovery, type the IP in once and it sticks.</p>
+      </div>
+      <div class="spec">
+        <h3>Front-panel replica</h3>
+        <p>The green display is reproduced in both views: source, scrolling track or station line, volume in dB, and the indicator lamps for mode, zones, sleep and muting.</p>
+      </div>
+      <div class="spec">
+        <h3>Every input, every mode</h3>
+        <p>All thirteen source selectors, the quick modes (Auto, Movie, Music, Game, Stereo) and direct picks like Pure Audio, Neural:X, All Channel Stereo and Full Mono.</p>
+      </div>
+      <div class="spec">
+        <h3>Volume that feels like the knob</h3>
+        <p>Drag the machined dial, roll the scroll wheel, or step it a notch at a time — with the same dB readout the receiver shows, plus mute.</p>
+      </div>
+      <div class="spec">
+        <h3>Zone 2 and Zone 3</h3>
+        <p>Independent power, source, volume and mute for both extra zones, without walking to the rack or digging through an on-screen menu.</p>
+      </div>
+      <div class="spec">
+        <h3>Tone and setup trims</h3>
+        <p>Bass, treble, subwoofer and centre on vertical faders in half-decibel steps, alongside dimmer, HDMI output, Late Night, Music Optimizer and the sleep timer.</p>
+      </div>
+      <div class="spec">
+        <h3>Spotify Connect, with artwork</h3>
+        <p>Cover art, title, artist, album and a running progress bar, plus play, pause, skip, shuffle and repeat. The receiver reports it all — you never sign in to anything.</p>
+      </div>
+      <div class="spec">
+        <h3>Mini view that stays out of the way</h3>
+        <p>A compact always-on-top window with the display, volume, source, transport and artwork. Collapse it further and only the panel and volume strip remain.</p>
+      </div>
+      <div class="spec">
+        <h3>It tells you the truth about the link</h3>
+        <p>The status lamp turns green only once the receiver has actually answered — not merely because a socket opened. If it stops responding, the app says so and reconnects on its own.</p>
+      </div>
+      <div class="spec">
+        <h3>Nothing leaves your network</h3>
+        <p>Direct control on your own LAN. No account, no telemetry, no vendor cloud in the middle, and it keeps working when the internet doesn't.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TWO VIEWS -->
+  <section class="wrap" id="views">
+    <div class="head">
+      <div class="legend">Two ways to run it</div>
+      <h2>Full desk, or a sliver in the corner</h2>
+    </div>
+    <div class="plate views">
+      <div>
+        <p>
+          Use the full window when you're setting up a listening session — inputs, modes,
+          trims and zones all at once. Switch to the mini window when the music is already
+          playing and you only need the display, the volume and the next track.
+        </p>
+        <ul>
+          <li>Pin it above other windows, or let it sit in the taskbar</li>
+          <li>Collapse to a single strip: display and volume only</li>
+          <li>Album art, track and transport stay visible while collapsed</li>
+          <li>One click back to the full window, same connection</li>
+        </ul>
+      </div>
+      <img src="screenshots/mini-view.png" width="480" height="369"
+           alt="The mini window: compact front-panel display, volume slider, power, source selector and mute, album art with track title and transport buttons, and four listening-mode buttons.">
+    </div>
+  </section>
+
+  <!-- SPECS -->
+  <section class="wrap">
+    <div class="head">
+      <div class="legend">Under the hood</div>
+      <h2>What it needs</h2>
+    </div>
+    <dl class="plate table">
+      <div class="row"><dt>Control protocol</dt><dd>Integra / Onkyo <b>eISCP</b> over TCP port <b>60128</b></dd></div>
+      <div class="row"><dt>Discovery</dt><dd>UDP broadcast on the local subnet, with manual IP entry as a fallback</dd></div>
+      <div class="row"><dt>Tested hardware</dt><dd>Integra <b>DRX-3.4</b>. Other Integra and Onkyo network receivers speak the same protocol and are likely to work, but are untested.</dd></div>
+      <div class="row"><dt>Receiver setting</dt><dd>Network Standby must be <b>on</b> to control the unit while it is in standby</dd></div>
+      <div class="row"><dt>System</dt><dd>Windows 10 (1809 or newer) and Windows 11, 64-bit</dd></div>
+      <div class="row"><dt>Accounts required</dt><dd><b>None.</b> Track and artwork data comes from the receiver itself</dd></div>
+    </dl>
+  </section>
+
+  <!-- GET IT -->
+  <section class="wrap" id="get">
+    <div class="plate get">
+      <h2>Put it on your desktop</h2>
+      <p>
+        Download the installer, or build it from source in two commands. The Microsoft Store
+        listing is on the way.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/lgbtnewsradio-sudo/integra-control-pro/releases">Download installer</a>
+        <a class="btn" href="https://github.com/lgbtnewsradio-sudo/integra-control-pro">Source on GitHub</a>
+      </div>
+      <p class="note">Free, MIT-licensed, and open to pull requests.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      Integra Control Pro is an independent project. It is not affiliated with, endorsed by, or
+      sponsored by Onkyo, Integra, Spotify, or Microsoft. “Integra”, “Onkyo” and “Spotify” are
+      trademarks of their respective owners and are used here only to describe the hardware and
+      services this app works with.
+    </p>
+    <p>
+      Screenshots show the app running with sample playback data; the cover artwork in them is an
+      original graphic, not a real album. Source on
+      <a href="https://github.com/lgbtnewsradio-sudo/integra-control-pro">GitHub</a>.
+    </p>
+  </div>
+</footer>
+
+<script>
+// The volume readout settles to its resting value the way the display does on wake.
+(function () {
+  var el = document.getElementById('vol');
+  if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var target = 46, cur = 0;
+  var t = setInterval(function () {
+    cur += Math.max(1, Math.round((target - cur) / 4));
+    if (cur >= target) { cur = target; clearInterval(t); }
+    el.textContent = cur;
+  }, 45);
+})();
+</script>
+</body>
+</html>
