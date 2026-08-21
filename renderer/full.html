@@ -9,7 +9,7 @@
   /* min-height:0 is load-bearing: a flex child defaults to min-height:auto, which
      lets this box grow past the window instead of scrolling, and body's
      overflow:hidden then clips the bottom row with no scrollbar to reach it. */
-  .content { flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto;
+  .content { flex: 1; min-height: 0; overflow-y: scroll; overflow-x: auto;
     scrollbar-gutter: stable; padding: 14px 16px 16px;
     display: flex; flex-direction: column; gap: 12px; }
 
