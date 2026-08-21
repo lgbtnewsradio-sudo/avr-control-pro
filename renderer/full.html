@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>AVR Control Pro</title>
@@ -60,7 +60,7 @@
     overflow: hidden; text-overflow: ellipsis; }
   .track-meta .artist { font-size: 13px; color: var(--text-dim); margin-top: 2px; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; }
-  .track-meta .album { font-size: 11px; color: #565d64; margin-top: 2px; white-space: nowrap;
+  .track-meta .album { font-size: 11px; color: var(--text-dim); margin-top: 2px; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; }
   .svc-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 9px; letter-spacing: 2px;
     font-weight: 700; color: #1DB954; margin-bottom: 4px; }
@@ -179,15 +179,15 @@
     <div class="conn"><span class="led" id="connLed"></span><span id="connText">OFFLINE</span></div>
     <div class="spacer"></div>
     <button class="tbtn" id="btnMini" title="Switch to mini view">MINI VIEW</button>
-    <button id="wMin">&#x2500;</button>
-    <button id="wMax">&#x25A1;</button>
-    <button class="close" id="wClose">&#x2715;</button>
+    <button id="wMin" aria-label="Minimise window">&#x2500;</button>
+    <button id="wMax" aria-label="Maximise window">&#x25A1;</button>
+    <button class="close" id="wClose" aria-label="Close window">&#x2715;</button>
   </div>
 
   <div class="content">
     <!-- FRONT PANEL DISPLAY -->
     <div class="panel screws vfd-strip" style="padding:10px 12px;">
-      <div id="vfdHost"></div>
+      <div id="vfdHost" role="img" aria-label="Receiver front panel display"></div>
     </div>
 
     <div class="main-grid">
@@ -215,7 +215,7 @@
         <h3>Network Player &nbsp;·&nbsp; Spotify Connect</h3>
         <div class="player">
           <div class="svc-badge" id="svcBadge" style="display:none;"><span class="dot"></span>SPOTIFY CONNECT</div>
-          <div class="art-frame"><span class="placeholder" id="artPh">&#x266B;</span><img id="artImg" style="display:none;"></div>
+          <div class="art-frame"><span class="placeholder" id="artPh">&#x266B;</span><img id="artImg" alt="" style="display:none;"></div>
           <div class="track-meta">
             <div class="title" id="ntTitle">—</div>
             <div class="artist" id="ntArtist"></div>
@@ -227,9 +227,9 @@
             <span id="tTot"></span>
           </div>
           <div class="transport">
-            <button class="btn round" data-cmd="NTCTRDN" title="Previous">&#x23EE;</button>
-            <button class="btn round big" id="btnPlayPause" title="Play/Pause">&#x25B6;</button>
-            <button class="btn round" data-cmd="NTCTRUP" title="Next">&#x23ED;</button>
+            <button class="btn round" data-cmd="NTCTRDN" aria-label="Previous track" title="Previous">&#x23EE;</button>
+            <button class="btn round big" id="btnPlayPause" aria-label="Play or pause" title="Play/Pause">&#x25B6;</button>
+            <button class="btn round" data-cmd="NTCTRUP" aria-label="Next track" title="Next">&#x23ED;</button>
           </div>
           <div class="shuf-rep">
             <button class="btn" id="btnShuffle" data-cmd="NTCRANDOM">&#x1F500; SHUFFLE</button>
@@ -244,37 +244,41 @@
         <h3 style="width:100%;">Master Volume</h3>
         <div class="knob-ring">
           <canvas id="tickRing" width="196" height="196"></canvas>
-          <div class="knob" id="volKnob"><div class="dot" id="knobDot"></div></div>
+          <div class="knob" id="volKnob" role="slider" tabindex="0"
+               aria-label="Master volume"
+               aria-valuemin="0" aria-valuemax="82" aria-valuenow="0" aria-valuetext="Volume 0">
+            <div class="dot" id="knobDot"></div>
+          </div>
         </div>
         <div class="vol-readout"><span id="volNum">--</span> <small id="volDb"></small></div>
         <div class="row">
-          <button class="btn" data-cmd="MVLDOWN">&#x2212;</button>
+          <button class="btn" data-cmd="MVLDOWN" aria-label="Volume down">&#x2212;</button>
           <button class="btn danger" id="btnMute">MUTE</button>
-          <button class="btn" data-cmd="MVLUP">+</button>
+          <button class="btn" data-cmd="MVLUP" aria-label="Volume up">+</button>
         </div>
 
         <div class="zone-strip">
           <div class="zhead"><span class="zname">ZONE 2</span>
-            <button class="btn" id="z2Power" style="padding:5px 12px;font-size:10px;">&#x23FB;</button></div>
+            <button class="btn" id="z2Power" aria-label="Zone 2 power" style="padding:5px 12px;font-size:10px;">&#x23FB;</button></div>
           <div class="row">
-            <select id="z2Input"></select>
-            <button class="btn" id="z2Mute" style="padding:6px 10px;font-size:10px;">M</button>
+            <select id="z2Input" aria-label="Zone 2 source"></select>
+            <button class="btn" id="z2Mute" aria-label="Zone 2 mute" style="padding:6px 10px;font-size:10px;">M</button>
           </div>
           <div class="slider-row" style="grid-template-columns:1fr 34px;">
-            <input type="range" id="z2Vol" min="0" max="82" value="0">
+            <input type="range" id="z2Vol" aria-label="Zone 2 volume" min="0" max="82" value="0">
             <span class="val" id="z2VolVal">0</span>
           </div>
         </div>
 
         <div class="zone-strip">
           <div class="zhead"><span class="zname">ZONE 3</span>
-            <button class="btn" id="z3Power" style="padding:5px 12px;font-size:10px;">&#x23FB;</button></div>
+            <button class="btn" id="z3Power" aria-label="Zone 3 power" style="padding:5px 12px;font-size:10px;">&#x23FB;</button></div>
           <div class="row">
-            <select id="z3Input"></select>
-            <button class="btn" id="z3Mute" style="padding:6px 10px;font-size:10px;">M</button>
+            <select id="z3Input" aria-label="Zone 3 source"></select>
+            <button class="btn" id="z3Mute" aria-label="Zone 3 mute" style="padding:6px 10px;font-size:10px;">M</button>
           </div>
           <div class="slider-row" style="grid-template-columns:1fr 34px;">
-            <input type="range" id="z3Vol" min="0" max="82" value="0">
+            <input type="range" id="z3Vol" aria-label="Zone 3 volume" min="0" max="82" value="0">
             <span class="val" id="z3VolVal">0</span>
           </div>
         </div>
@@ -288,10 +292,10 @@
         <div class="audio-layout">
           <!-- DRX reports these in half-dB units: raw = dB * 2 -->
           <div class="fader-bank">
-            <div class="fader"><span class="val" id="adjBassVal">0</span><input type="range" class="vfader" id="adjBass" min="-20" max="20" value="0"><label>BASS</label></div>
-            <div class="fader"><span class="val" id="adjTrebleVal">0</span><input type="range" class="vfader" id="adjTreble" min="-20" max="20" value="0"><label>TREBLE</label></div>
-            <div class="fader"><span class="val" id="adjSwlVal">0</span><input type="range" class="vfader" id="adjSwl" min="-30" max="24" value="0"><label>SUB</label></div>
-            <div class="fader"><span class="val" id="adjCtlVal">0</span><input type="range" class="vfader" id="adjCtl" min="-24" max="24" value="0"><label>CENTER</label></div>
+            <div class="fader"><span class="val" id="adjBassVal">0</span><input type="range" class="vfader" id="adjBass" aria-label="Bass, decibels" min="-20" max="20" value="0"><label>BASS</label></div>
+            <div class="fader"><span class="val" id="adjTrebleVal">0</span><input type="range" class="vfader" id="adjTreble" aria-label="Treble, decibels" min="-20" max="20" value="0"><label>TREBLE</label></div>
+            <div class="fader"><span class="val" id="adjSwlVal">0</span><input type="range" class="vfader" id="adjSwl" aria-label="Subwoofer level, decibels" min="-30" max="24" value="0"><label>SUB</label></div>
+            <div class="fader"><span class="val" id="adjCtlVal">0</span><input type="range" class="vfader" id="adjCtl" aria-label="Centre level, decibels" min="-24" max="24" value="0"><label>CENTER</label></div>
           </div>
           <div class="adj-right">
             <div class="info-block">
@@ -318,13 +322,13 @@
         <h3>Navigation</h3>
         <div class="navpad">
           <button class="btn" data-cmd="OSDMENU" style="font-size:9px;">MENU</button>
-          <button class="btn" data-cmd="OSDUP">&#x25B2;</button>
+          <button class="btn" data-cmd="OSDUP" aria-label="Navigate up">&#x25B2;</button>
           <button class="btn" data-cmd="OSDQUICK" style="font-size:9px;">QUICK</button>
-          <button class="btn" data-cmd="OSDLEFT">&#x25C0;</button>
+          <button class="btn" data-cmd="OSDLEFT" aria-label="Navigate left">&#x25C0;</button>
           <button class="btn" data-cmd="OSDENTER" style="font-size:9px;">ENTER</button>
-          <button class="btn" data-cmd="OSDRIGHT">&#x25B6;</button>
+          <button class="btn" data-cmd="OSDRIGHT" aria-label="Navigate right">&#x25B6;</button>
           <button class="btn" data-cmd="OSDHOME" style="font-size:9px;">HOME</button>
-          <button class="btn" data-cmd="OSDDOWN">&#x25BC;</button>
+          <button class="btn" data-cmd="OSDDOWN" aria-label="Navigate down">&#x25BC;</button>
           <button class="btn" data-cmd="OSDEXIT" style="font-size:9px;">EXIT</button>
         </div>
         <h3 style="margin-top:10px;">Tuner</h3>
@@ -340,7 +344,7 @@
       <!-- CONNECTION -->
       <div class="panel screws">
         <h3>Connection</h3>
-        <div class="status-bar"><span>STATUS</span><b id="connDetail">—</b></div>
+        <div class="status-bar"><span>STATUS</span><b id="connDetail" role="status" aria-live="polite">—</b></div>
         <div class="row" style="margin-bottom:8px;">
           <button class="btn" id="btnDiscover" style="flex:1;">&#x1F50D; AUTO DISCOVER</button>
           <button class="btn" id="btnReconnect" title="Drop and re-establish the control session">&#x21BB; RECONNECT</button>

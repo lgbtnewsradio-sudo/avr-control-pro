@@ -71,7 +71,29 @@ npm run dist         # NSIS installer  → dist/*.exe
 npm run dist:store   # Store MSIX      → dist/*.msix
 npm run icons        # regenerate app icon + Store tiles
 npm run shots        # regenerate docs screenshots
+npm run a11y         # accessibility audit (axe-core + custom checks)
 ```
+
+## Accessibility
+
+`npm run a11y` runs axe-core against both app views and the landing page at
+WCAG 2.1/2.2 A and AA, and adds checks axe can't make on its own: it measures
+text contrast against the *rendered pixels* (this UI is almost entirely
+gradients, which axe can only mark "incomplete"), checks pointer targets against
+the 24x24 minimum, presses Tab for real and confirms a focus ring appears, and
+verifies the custom volume knob is keyboard-operable.
+
+All three surfaces currently report zero axe violations and zero contrast
+failures. One deliberate exception: the **unlit** indicator lamps on the
+front-panel replica sit at about 1.2:1, matching real hardware where an inactive
+indicator is invisible. WCAG 1.4.3 exempts inactive user-interface components,
+and nothing is lost to assistive technology — the panel is exposed as a single
+image whose label is rebuilt from live state ("Front panel display. Source NET.
+Volume 64.0, -18.0dB. Listening mode DTS NEURAL:X...").
+
+Keyboard notes: the volume knob is a `role="slider"` — arrows step, Shift+arrow
+steps by five, Page Up/Down jump by ten, Home/End go to the ends. Connection
+state changes are announced through a polite live region.
 
 See [STORE.md](STORE.md) for the Microsoft Store submission checklist — product identity,
 the payout and tax profile required for paid apps, price tier, and the free trial.

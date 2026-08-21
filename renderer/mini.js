@@ -81,6 +81,8 @@ function render(s) {
       art.dataset.src = n.art;
       art.innerHTML = '';
       const im = new Image();
+      im.alt = [n.title, n.artist].filter(Boolean).length
+        ? `Cover art: ${[n.title, n.artist].filter(Boolean).join(' by ')}` : 'Album cover art';
       im.onerror = () => { art.innerHTML = '&#x266B;'; }; // keep dataset.src so the failed URL isn't retried
       im.src = n.art;
       art.appendChild(im);

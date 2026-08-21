@@ -138,6 +138,34 @@ knob.addEventListener('pointermove', (e) => {
   volSendT = setTimeout(() => cmd('MVL' + h2(v)), 80);
 });
 knob.addEventListener('pointerup', () => { dragging = false; });
+
+/*
+ * Keyboard operation. A div that only listens for pointer events is
+ * unreachable without a mouse, so the knob behaves like a standard slider:
+ * arrows step, Page keys jump, Home/End go to the ends.
+ */
+knob.addEventListener('keydown', (e) => {
+  const fine = e.shiftKey ? 5 : 1;
+  let v = S ? S.volume : 0;
+  let handled = true;
+  switch (e.key) {
+    case 'ArrowUp': case 'ArrowRight': v += fine; break;
+    case 'ArrowDown': case 'ArrowLeft': v -= fine; break;
+    case 'PageUp': v += 10; break;
+    case 'PageDown': v -= 10; break;
+    case 'Home': v = 0; break;
+    case 'End': v = MAXV; break;
+    default: handled = false;
+  }
+  if (!handled) return;
+  e.preventDefault();
+  v = Math.max(0, Math.min(MAXV, v));
+  setKnob(v);
+  const step = S ? mainScale(S).step : 1;
+  document.getElementById('volNum').textContent = fmtVol(v, step);
+  document.getElementById('volDb').textContent = volDb(v, step);
+  cmd('MVL' + h2(v));
+});
 knob.addEventListener('wheel', (e) => {
   e.preventDefault();
   cmd(e.deltaY < 0 ? 'MVLUP' : 'MVLDOWN');
@@ -199,6 +227,10 @@ function render(s) {
   document.getElementById('volNum').textContent = on ? fmtVol(s.volume, step) : '--';
   document.getElementById('volDb').textContent = on ? volDb(s.volume, step) : '';
   if (!dragging) setKnob(s.volume);
+  knob.setAttribute('aria-valuemax', String(MAXV));
+  knob.setAttribute('aria-valuenow', String(s.volume));
+  knob.setAttribute('aria-valuetext',
+    on ? `${fmtVol(s.volume, step)}, ${volDb(s.volume, step)}` : 'Receiver off');
 
   inputGrid.querySelectorAll('.btn').forEach((b) =>
     b.classList.toggle('active', b.dataset.input === s.input));
@@ -217,6 +249,8 @@ function render(s) {
   img.onerror = () => { img.dataset.failed = img.src; img.style.display = 'none'; ph.style.display = ''; };
   if (n.art && n.art !== img.dataset.failed) {
     if (img.src !== n.art) img.src = n.art;
+    img.alt = [n.title, n.artist].filter(Boolean).length
+      ? `Cover art: ${[n.title, n.artist].filter(Boolean).join(' by ')}` : 'Album cover art';
     img.style.display = ''; ph.style.display = 'none';
   } else {
     img.style.display = 'none'; ph.style.display = '';

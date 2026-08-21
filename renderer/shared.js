@@ -154,6 +154,29 @@ function updateVFD(s) {
   el('indZ3').classList.toggle('on', s.z3.power);
   el('indSleep').classList.toggle('on', on && s.sleep > 0);
   el('indMute').classList.toggle('on', on && s.mute);
+
+  /*
+   * The panel is exposed as a single image, so its label has to carry
+   * everything the glass shows — otherwise the readout is sighted-only, and
+   * the unlit indicators (deliberately near-invisible, like real hardware)
+   * would be the only cue a screen reader could never reach.
+   */
+  const host = el('vfdHost');
+  if (host) {
+    const parts = [];
+    if (!on) {
+      parts.push('Receiver in standby');
+    } else {
+      parts.push(`Source ${INPUT_LABEL[s.input] || s.input || 'unknown'}`);
+      parts.push(s.mute ? 'Muted' : `Volume ${fmtVol(s.volume, step)}, ${volDb(s.volume, step)}`);
+      if (MODE_LABEL[s.mode]) parts.push(`Listening mode ${MODE_LABEL[s.mode]}`);
+      if (main) parts.push(`Playing ${main.replace(/\s+•\s+/g, ' — ')}`);
+      if (s.z2.power) parts.push('Zone 2 on');
+      if (s.z3.power) parts.push('Zone 3 on');
+      if (s.sleep > 0) parts.push(`Sleep timer ${s.sleep} minutes`);
+    }
+    host.setAttribute('aria-label', 'Front panel display. ' + parts.join('. ') + '.');
+  }
 }
 
 /* ---------------- connection LED ---------------- */

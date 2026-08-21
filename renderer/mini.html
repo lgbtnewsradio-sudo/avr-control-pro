@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>AVR Control — Mini</title>
@@ -73,42 +73,42 @@
 <div class="mini-app" id="miniApp">
   <div class="mini-bar">
     <span class="logo">AVR</span>
-    <span class="led" id="connLed"></span><span id="connText" style="display:none;"></span>
+    <span class="led" id="connLed" role="status" aria-live="polite"></span><span id="connText" style="display:none;"></span>
     <div class="spacer"></div>
-    <button id="btnPin" title="Always on top">&#x1F4CC;</button>
-    <button id="btnCollapse" title="Collapse">&#x2B0D;</button>
-    <button id="btnFull" title="Full view">&#x26F6;</button>
-    <button class="close" id="wClose">&#x2715;</button>
+    <button id="btnPin" aria-label="Keep window on top" title="Always on top">&#x1F4CC;</button>
+    <button id="btnCollapse" aria-label="Collapse window" title="Collapse">&#x2B0D;</button>
+    <button id="btnFull" aria-label="Switch to full view" title="Full view">&#x26F6;</button>
+    <button class="close" id="wClose" aria-label="Close window">&#x2715;</button>
   </div>
   <div class="mini-body">
-    <div class="mini-vfd" id="vfdHost"></div>
+    <div class="mini-vfd" id="vfdHost" role="img" aria-label="Receiver front panel display"></div>
 
     <div class="mini-vol">
-      <button class="btn" data-cmd="MVLDOWN">&#x2212;</button>
-      <input type="range" id="mVol" min="0" max="82" value="0">
-      <button class="btn" data-cmd="MVLUP">+</button>
+      <button class="btn" data-cmd="MVLDOWN" aria-label="Volume down">&#x2212;</button>
+      <input type="range" id="mVol" min="0" max="82" value="0" aria-label="Master volume">
+      <button class="btn" data-cmd="MVLUP" aria-label="Volume up">+</button>
       <span class="num" id="mVolNum">--</span>
     </div>
 
     <div class="collapsible">
       <div class="mini-row">
-        <button class="btn" id="btnPower">&#x23FB;</button>
-        <select id="mInput"></select>
+        <button class="btn" id="btnPower" aria-label="Main power">&#x23FB;</button>
+        <select id="mInput" aria-label="Input source"></select>
         <button class="btn" id="btnMute">MUTE</button>
       </div>
 
       <div class="mini-player" id="miniPlayer">
-        <div class="mini-art" id="mArt">&#x266B;</div>
+        <div class="mini-art" id="mArt" role="img" aria-label="Album art">&#x266B;</div>
         <div class="mini-meta">
           <div class="svc" id="mSvc">SPOTIFY CONNECT</div>
           <div class="title" id="mTitle">—</div>
           <div class="artist" id="mArtist"></div>
           <div class="transport">
-            <button class="btn" data-cmd="NTCTRDN">&#x23EE;</button>
-            <button class="btn" id="btnPlayPause">&#x25B6;</button>
-            <button class="btn" data-cmd="NTCTRUP">&#x23ED;</button>
-            <button class="btn" id="btnShuffle" data-cmd="NTCRANDOM">&#x1F500;</button>
-            <button class="btn" id="btnRepeat" data-cmd="NTCREPEAT">&#x1F501;</button>
+            <button class="btn" data-cmd="NTCTRDN" aria-label="Previous track">&#x23EE;</button>
+            <button class="btn" id="btnPlayPause" aria-label="Play or pause">&#x25B6;</button>
+            <button class="btn" data-cmd="NTCTRUP" aria-label="Next track">&#x23ED;</button>
+            <button class="btn" id="btnShuffle" aria-label="Shuffle" data-cmd="NTCRANDOM">&#x1F500;</button>
+            <button class="btn" id="btnRepeat" aria-label="Repeat" data-cmd="NTCREPEAT">&#x1F501;</button>
           </div>
           <div class="mini-prog"><div class="fill" id="mFill"></div></div>
         </div>

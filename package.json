@@ -11,9 +11,11 @@
     "shots": "electron tools/shot.js full && electron tools/shot.js mini",
     "pack": "electron-builder --dir",
     "dist": "electron-builder --win nsis",
-    "dist:store": "node tools/msix.js"
+    "dist:store": "node tools/msix.js",
+    "a11y": "electron tools/a11y.js"
   },
   "devDependencies": {
+    "axe-core": "^4.13.0",
     "electron": "^33.0.0",
     "electron-builder": "^26.15.3"
   },

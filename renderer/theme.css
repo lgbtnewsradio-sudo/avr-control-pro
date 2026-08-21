@@ -11,7 +11,7 @@
   --text: #c7ccd1;
   --text-dim: #7d848b;
   --vfd: #55ff86;
-  --vfd-dim: #1d5c32;
+  --vfd-dim: #41905f;   /* 4.5:1 on the VFD glass — carries the dB reading */
   --vfd-glow: rgba(85, 255, 134, 0.55);
   --accent: #4ea1ff;
   --danger: #ff5f56;
@@ -193,7 +193,7 @@ body {
 
 /* ---------------- sliders ---------------- */
 input[type='range'] {
-  -webkit-appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer;
+  -webkit-appearance: none; width: 100%; height: 26px; background: transparent; cursor: pointer;
 }
 input[type='range']::-webkit-slider-runnable-track {
   height: 5px; border-radius: 3px;
@@ -243,6 +243,32 @@ input[type='range']::-webkit-slider-thumb:hover { background: linear-gradient(18
 .titlebar button:hover { background: rgba(255,255,255,0.07); color: #fff; }
 .titlebar button.close:hover { background: var(--danger); color: #fff; }
 .titlebar .tbtn { width: auto; padding: 0 10px; font-size: 10px; letter-spacing: 1px; font-weight: 700; }
+
+/* ---------------- accessibility ---------------- */
+/* Every control needs a focus ring that survives the dark faceplate. */
+.btn:focus-visible,
+select:focus-visible,
+input:focus-visible,
+[role='slider']:focus-visible,
+.titlebar button:focus-visible,
+.mini-bar button:focus-visible,
+.disc-item:focus-visible {
+  outline: 2px solid var(--vfd);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(85, 255, 134, 0.22);
+}
+/* Keyboard focus on the knob highlights the dial itself. */
+.knob:focus-visible { outline: 2px solid var(--vfd); outline-offset: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  /* the marquee would otherwise park mid-scroll and hide the track name */
+  .vfd-main.scrolling .scroll-inner { animation: none !important; transform: none !important; }
+}
 
 /* ---------------- misc ---------------- */
 .grid-btns { display: grid; gap: 7px; }
