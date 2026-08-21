@@ -12,7 +12,7 @@ const client = new EiscpClient();
 /* Settings                                                            */
 /* ------------------------------------------------------------------ */
 const settingsPath = () => path.join(app.getPath('userData'), 'settings.json');
-let settings = { ip: null, port: 60128, mode: 'auto', miniPinned: true };
+let settings = { ip: null, port: 60128, mode: 'auto', miniPinned: true, model: null };
 function loadSettings() {
   try { settings = { ...settings, ...JSON.parse(fs.readFileSync(settingsPath(), 'utf8')) }; } catch (e) {}
 }
@@ -185,10 +185,13 @@ ipcMain.handle('discover', async () => {
   return devices;
 });
 
-ipcMain.handle('connect', (_e, { ip, port, mode }) => {
+ipcMain.handle('connect', (_e, { ip, port, mode, model }) => {
   settings.ip = ip;
   settings.port = port || 60128;
   if (mode) settings.mode = mode;
+  // Only discovery knows the model name; a manual IP leaves it blank.
+  settings.model = model || null;
+  state.connection.model = settings.model;
   saveSettings();
   client.connect(ip, settings.port);
   return true;
@@ -246,7 +249,7 @@ function createFullWin() {
   fullWin = new BrowserWindow({
     ...winCommon,
     width: 1440, height: 940, minWidth: 1150, minHeight: 780,
-    title: 'Integra Control Pro',
+    title: 'AVR Control Pro',
   });
   fullWin.loadFile(path.join(__dirname, '..', 'renderer', 'full.html'));
   fullWin.on('closed', () => { fullWin = null; });
@@ -262,7 +265,7 @@ function createMiniWin() {
     resizable: false,
     alwaysOnTop: settings.miniPinned,
     skipTaskbar: false,
-    title: 'Integra — Mini',
+    title: 'AVR Control — Mini',
   });
   miniWin.loadFile(path.join(__dirname, '..', 'renderer', 'mini.html'));
   miniWin.on('closed', () => { miniWin = null; });
@@ -282,6 +285,7 @@ app.on('second-instance', () => {
 
 app.whenReady().then(async () => {
   loadSettings();
+  state.connection.model = settings.model || null;
   createFullWin();
 
   if (settings.mode === 'manual' && settings.ip) {
@@ -294,6 +298,7 @@ app.whenReady().then(async () => {
       state.connection.model = integra.model;
       settings.ip = integra.ip;
       settings.port = integra.port;
+      settings.model = integra.model;
       saveSettings();
       client.connect(integra.ip, integra.port);
     } else if (settings.ip) {

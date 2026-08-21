@@ -37,12 +37,19 @@ function findMakeAppx() {
 
 // 1. Stage. electron-builder exits non-zero on its failed pack step; the
 //    staged output is still what we need, so check for that rather than status.
+//    shell:true is required — Node refuses to spawn .cmd shims directly since
+//    the CVE-2024-27980 mitigation, and fails silently without it.
 console.log('> staging appx payload with electron-builder');
-spawnSync(
-  process.platform === 'win32' ? 'npx.cmd' : 'npx',
-  ['electron-builder', '--win', 'appx'],
-  { cwd: ROOT, stdio: 'inherit', env: { ...process.env, ELECTRON_SKIP_BINARY_DOWNLOAD: '1' } }
-);
+const stage = spawnSync('npx electron-builder --win appx', {
+  cwd: ROOT,
+  stdio: 'inherit',
+  shell: true,
+  env: { ...process.env, ELECTRON_SKIP_BINARY_DOWNLOAD: '1' },
+});
+if (stage.error) {
+  console.error('could not run electron-builder:', stage.error.message);
+  process.exit(1);
+}
 
 const mapping = path.join(DIST, '__appx-x64', 'mapping.txt');
 if (!fs.existsSync(mapping)) {

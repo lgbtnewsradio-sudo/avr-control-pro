@@ -1,120 +1,151 @@
-# Microsoft Store submission
+# Microsoft Store submission — AVR Control Pro at $5.99
 
-Everything here is prepared: the MSIX builds, the tile assets are generated, and the
-privacy policy the Store requires is published. Three things still need a human —
-they depend on your Partner Center account and can't be filled in ahead of time.
+The package builds, the tile assets are generated, the privacy policy is published, and
+the app has been renamed off the Integra trademark. What's left needs your Partner Center
+account.
 
 ---
 
-## Read this first: the app name is a trademark risk
+## Status of the trademark question
 
-The app is currently called **Integra Control Pro**, and the in-app title bar renders
-"INTEGRA" as a wordmark. "Integra" is a trademark of Onkyo/Integra, and Microsoft Store
-policy (10.1 and 10.2) requires that your listing not use branding you don't own or
-imply an endorsement you don't have. Submitting under this name risks rejection at
-certification, or removal later after a trademark complaint.
+**Done.** The product is now **AVR Control Pro** — a name you own. The in-app title bar
+reads "AVR CONTROL PRO" followed by whichever receiver model discovery found, so it
+adapts to the customer's hardware instead of hard-coding one model. The repository, the
+site and the package identity all use `avr-control-pro`.
 
-Two ways through it, in order of safety:
+Compatibility now lives in the description, which is the safe place for it:
 
-1. **Rename the product** to something you own — e.g. *AVR Control Pro* — and describe
-   compatibility in the listing text instead: "Works with Integra and Onkyo network
-   receivers." The Store name and the description are treated differently; describing
-   what hardware your app supports is normal and expected.
-2. **Use a nominative name** such as *Remote for Integra Receivers*. This is the pattern
-   many third-party remotes use, and it is more often accepted than a bare brand name —
-   but it is still the reviewer's call, so it carries some risk.
+> Works with Integra and Onkyo network receivers.
 
-Whichever you choose, keep the disclaimer that's already in the site footer and put the
-same line at the end of your Store description:
+Keep this line at the end of the Store description — it is already in the site footer:
 
 > Not affiliated with, endorsed by, or sponsored by Onkyo, Integra, Spotify, or Microsoft.
 > All trademarks are the property of their respective owners.
 
-To rename, change `productName` and `build.productName` in `package.json`, the
-`build.appx.displayName`, and the `.wordmark` text in `renderer/full.html` and
-`renderer/mini.html`. Nothing else depends on the name.
+Do not put "Integra" or "Onkyo" in the **app name** field. Describing compatibility is
+normal; branding with someone else's mark is what gets listings pulled.
 
 ---
 
 ## What you need to do
 
-### 1. Get a Partner Center account and reserve the name
+### 1. Partner Center account
 
-- Register at <https://partner.microsoft.com/dashboard> — a one-time fee
-  (individual accounts are cheaper than company accounts; company accounts require
-  business verification).
-- Create the app and **reserve the name** you settled on above.
+Register at <https://partner.microsoft.com/dashboard>. One-time registration fee;
+individual accounts are cheaper than company accounts and don't need business
+verification. Then create the app and **reserve the name "AVR Control Pro"**.
 
-### 2. Copy your product identity into `package.json`
+### 2. Payout and tax profile — required before you can sell anything
 
-Partner Center → your app → **Product management → Product identity**. Copy the three
-values into `build.appx` in `package.json`, replacing the placeholders:
+This is the step that only applies to paid apps, and it blocks your money rather than
+your submission, so do it early:
 
-| package.json field     | Partner Center value        | Looks like                          |
-| ---------------------- | --------------------------- | ----------------------------------- |
-| `identityName`         | Package/Identity/Name       | `12345MikeMoran.IntegraControlPro`  |
-| `publisher`            | Package/Identity/Publisher  | `CN=A1B2C3D4-1234-5678-9ABC-...`    |
-| `publisherDisplayName` | Package/Properties/PublisherDisplayName | your publisher display name |
+- **Payout account** — the bank account Microsoft deposits into.
+- **Tax profile** — a W-9 if you're in the US, W-8 otherwise. Microsoft withholds tax
+  until this is complete.
 
-These must match **exactly**, or the upload is rejected.
+Both live under Partner Center → Settings → Account settings → Payout and tax.
 
-### 3. Build and upload
+### 3. Copy your product identity into `package.json`
+
+Partner Center → your app → **Product management → Product identity**. Replace the three
+placeholders in `build.appx`:
+
+| package.json field     | Partner Center value                    | Looks like                       |
+| ---------------------- | --------------------------------------- | -------------------------------- |
+| `identityName`         | Package/Identity/Name                   | `12345MikeMoran.AVRControlPro`   |
+| `publisher`            | Package/Identity/Publisher              | `CN=A1B2C3D4-1234-5678-9ABC-...` |
+| `publisherDisplayName` | Package/Properties/PublisherDisplayName | your publisher display name      |
+
+They must match **exactly** or the upload is rejected.
+
+### 4. Set the price to $5.99
+
+Pricing and availability → **Markets and custom prices** → base price.
+
+Note: **$5.90 is not selectable.** Store price tiers start at $0.99 and step in fixed
+increments that all end in 9 — $5.99 is the tier next to the number you had in mind.
+The same applies if you ever move up: it's $6.99 or $7.99, never $7.00.
+
+Microsoft takes **15%** of each sale on their commerce platform, so $5.99 nets you about
+**$5.09**. Microsoft is the merchant of record — they collect and remit VAT and sales
+tax, and they handle refunds, so you have no tax registration obligations per market.
+
+### 5. Turn on the free trial
+
+Pricing and availability → **Free trial** → choose a time-limited trial (7 days is
+typical).
+
+Do this. The single biggest reason someone won't buy a receiver remote is "will it work
+with *my* unit?" — the app is confirmed on a DRX-3.4 and merely *likely* on everything
+else, and a trial answers that question honestly instead of generating refunds. Once the
+trial is live, add a line to the listing description saying so.
+
+### 6. Build and upload
 
 ```bash
 npm run dist:store
 ```
 
-That produces `dist/integra-control-pro-1.0.0-x64.msix`. Upload it in Partner Center
-under **Packages**. Do not sign it yourself — the Store re-signs packages with its own
-certificate on ingestion.
+Produces `dist/avr-control-pro-1.1.0-x64.msix`. Upload under **Packages**. Don't sign it
+yourself — the Store re-signs on ingestion.
 
 Bump `version` in `package.json` for every resubmission; the Store rejects a package
-whose version isn't higher than the last one you uploaded.
+whose version isn't higher than the last one uploaded.
 
 ---
 
 ## Listing content you can reuse
 
 **Privacy policy URL** (required — the app uses the network):
-`https://lgbtnewsradio-sudo.github.io/integra-control-pro/privacy.html`
+`https://lgbtnewsradio-sudo.github.io/avr-control-pro/privacy.html`
 
 **Short description**
 
-> Control your Integra or Onkyo network receiver from your Windows desktop. Full input,
-> zone, listening-mode and tone control, a live replica of the receiver's front-panel
-> display, and Spotify Connect track info with album art. No account required.
+> Control your Integra or Onkyo network receiver from your Windows desktop. Every input,
+> zone, listening mode and tone trim, a live replica of the receiver's front-panel
+> display, and Spotify Connect track info with album art. No account, no cloud, no
+> subscription.
 
-**Screenshots** — `docs/screenshots/full-view.png` (1440×1191) and
-`docs/screenshots/mini-view.png` (480×369). The Store wants at least one desktop
-screenshot at 1366×768 or larger, so the full view qualifies; the mini view is below the
-minimum and should be used only as a secondary image if the uploader accepts it, or
-padded onto a 1366×768 canvas first.
+**Screenshots** — `docs/screenshots/full-view.png` (1440×1191) clears the Store's
+1366×768 desktop minimum. `docs/screenshots/mini-view.png` (480×369) is below it, so pad
+it onto a 1366×768 canvas if you want it as a second image. Regenerate both any time with
+`npm run shots`.
 
 **Category:** Music → Tools, or Utilities + tools.
 
-**Age rating:** the questionnaire will land on 3+ / Everyone — the app has no user
-content, ads, or data collection.
+**Age rating:** the questionnaire lands on 3+ / Everyone — no user content, ads, or data
+collection.
 
 ---
 
-## Things certification will check that are already handled
+## Already handled
 
 - **Full-trust desktop app.** electron-builder declares `runFullTrust`, which is what
-  lets a Win32/Electron app use raw TCP and UDP sockets inside an MSIX container. The
-  discovery broadcast and eISCP control connection work under that capability.
-- **Settings location.** The app writes its settings file to the standard per-user data
-  folder, which MSIX redirects into the package's own writable store. Nothing is written
-  next to the executable, which the Store forbids.
-- **Tile assets.** All required logos are generated into `build/appx/` by
-  `npm run icons` — 44, 71, 150, 310 square, 310×150 wide, 50 store logo, and a splash
-  screen.
-- **No third-party artwork.** The screenshots use synthetic cover art generated by the
-  app's demo mode, not a real album cover.
+  permits raw TCP and UDP sockets inside an MSIX container — needed for the discovery
+  broadcast and the eISCP control connection.
+- **Settings location.** Settings go to the standard per-user data folder, which MSIX
+  redirects into the package's writable store. Nothing is written next to the executable,
+  which the Store forbids.
+- **Licensing.** Store-installed copies are license-enforced by the Store; only
+  purchasers can install. No licence-check code is needed in the app.
+- **Tile assets.** All required logos generate into `build/appx/` via `npm run icons`.
+- **No third-party artwork.** Screenshots use synthetic cover art from the app's demo
+  mode, not a real album cover.
+
+## What changed when the app went paid
+
+- Free installer binaries were removed from the GitHub releases page. Publishing a free
+  build of the same app one click from the Store listing would undercut the price.
+- The licence changed from MIT to a source-available personal-use licence (see `LICENSE`).
+  Version 1.0.0 stays MIT for anyone who already has it — that can't be revoked — so this
+  applies from 1.1.0 onward.
+- The repository stays public so buyers can audit what the app does on their network,
+  but redistribution and resale now require permission.
 
 ## Known toolchain quirk
 
-`electron-builder --win appx` stages the package correctly and then fails at the final
-step with `spawn UNKNOWN` when it tries to run `makeappx.exe`. `npm run dist:store` works
-around this: it lets electron-builder stage the payload, then invokes `makeappx.exe` from
-the installed Windows SDK directly. If you ever see "makeappx.exe not found", install the
-Windows 10/11 SDK and re-run.
+`electron-builder --win appx` stages correctly and then fails with `spawn UNKNOWN` when
+it runs `makeappx.exe`. `npm run dist:store` works around it: electron-builder stages the
+payload, then `tools/msix.js` calls `makeappx.exe` from the installed Windows SDK
+directly. If you see "makeappx.exe not found", install the Windows 10/11 SDK.

@@ -1,10 +1,11 @@
-# Integra Control Pro
+# AVR Control Pro
 
 A Windows desktop app that controls Integra and Onkyo network receivers over IP, with a
 live replica of the receiver's front-panel display, full control of every input, zone,
 listening mode and trim, and Spotify Connect track info with album art.
 
-**[Landing page →](https://lgbtnewsradio-sudo.github.io/integra-control-pro/)**
+**[Landing page →](https://lgbtnewsradio-sudo.github.io/avr-control-pro/)** · **$5.99 on the
+Microsoft Store** (listing in certification)
 
 ![The full window](docs/screenshots/full-view.png)
 
@@ -47,6 +48,9 @@ a real album.
 
 ## Running from source
 
+The source is published so you can see exactly what the app does on your network, and so
+you can build it for your own use. It is not open source — see [Licence](#licence).
+
 ```bash
 npm install
 npm start
@@ -67,8 +71,8 @@ npm run icons        # regenerate app icon + Store tiles
 npm run shots        # regenerate docs screenshots
 ```
 
-See [STORE.md](STORE.md) for Microsoft Store submission — including a **trademark note
-about the app's name** that you should read before submitting.
+See [STORE.md](STORE.md) for the Microsoft Store submission checklist — product identity,
+the payout and tax profile required for paid apps, price tier, and the free trial.
 
 ---
 
@@ -115,5 +119,13 @@ docs/          landing page + privacy policy (GitHub Pages)
 
 ## Licence
 
-MIT. Not affiliated with, endorsed by, or sponsored by Onkyo, Integra, Spotify, or
-Microsoft; all trademarks belong to their respective owners.
+Copyright (c) 2026 Mike Moran. All rights reserved. You may read and audit this source,
+and build it for your own personal use on hardware you own. Redistributing builds, or
+selling this software or derivatives of it, requires written permission. See
+[LICENSE](LICENSE) for the exact terms.
+
+Version 1.0.0 was released under the MIT Licence and stays MIT for anyone who obtained
+it; this licence governs 1.1.0 onward.
+
+Not affiliated with, endorsed by, or sponsored by Onkyo, Integra, Spotify, or Microsoft;
+all trademarks belong to their respective owners.

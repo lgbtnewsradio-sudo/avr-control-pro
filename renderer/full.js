@@ -157,7 +157,7 @@ function renderDiscovered(devices) {
     const el = document.createElement('div');
     el.className = 'disc-item';
     el.innerHTML = `<span class="m">${esc(d.model)}</span><span class="ip">${esc(d.ip)}</span>`;
-    el.onclick = () => window.integra.connect({ ip: d.ip, port: d.port, mode: 'auto' });
+    el.onclick = () => window.integra.connect({ ip: d.ip, port: d.port, mode: 'auto', model: d.model });
     list.appendChild(el);
   });
 }
@@ -182,6 +182,8 @@ function render(s) {
   S = s;
   updateVFD(s);
   updateConnLed(s);
+  document.getElementById('brandModel').textContent =
+    s.connection.model ? '·  ' + s.connection.model : '';
 
   const on = s.power;
   document.getElementById('btnPower').classList.toggle('power-on', on);

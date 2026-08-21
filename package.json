@@ -1,9 +1,9 @@
 {
-  "name": "integra-control-pro",
-  "productName": "Integra Control Pro",
-  "version": "1.0.0",
-  "description": "Premium IP control for Integra/Onkyo network receivers — eISCP control, auto-discovery, front-panel replica, Spotify Connect display",
-  "license": "MIT",
+  "name": "avr-control-pro",
+  "productName": "AVR Control Pro",
+  "version": "1.1.0",
+  "description": "Desktop control for Integra and Onkyo network receivers - eISCP control, auto-discovery, front-panel replica, Spotify Connect display",
+  "license": "SEE LICENSE IN LICENSE",
   "main": "main/main.js",
   "scripts": {
     "start": "electron .",
@@ -18,9 +18,9 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.integracontrolpro.app",
-    "productName": "Integra Control Pro",
-    "copyright": "Copyright © 2026",
+    "appId": "com.avrcontrolpro.app",
+    "productName": "AVR Control Pro",
+    "copyright": "Copyright (c) 2026 Mike Moran",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -53,14 +53,14 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Integra Control Pro"
+      "shortcutName": "AVR Control Pro"
     },
     "appx": {
       "identityName": "REPLACE.WithPartnerCenterIdentityName",
       "publisher": "CN=REPLACE-WITH-PARTNER-CENTER-PUBLISHER-ID",
       "publisherDisplayName": "REPLACE-WITH-PUBLISHER-DISPLAY-NAME",
       "applicationId": "AvrControlPro",
-      "displayName": "Integra Control Pro",
+      "displayName": "AVR Control Pro",
       "backgroundColor": "#0b0c0d",
       "showNameOnTiles": false,
       "languages": [
