@@ -263,8 +263,12 @@ function render(s) {
   document.getElementById('ltnVal').textContent = LTN_LABEL[s.ltn] || s.ltn;
   document.getElementById('motVal').textContent = s.mot === '01' ? 'ON' : 'OFF';
   document.getElementById('slpVal').textContent = s.sleep ? s.sleep + ' MIN' : 'OFF';
-  document.getElementById('infoAudio').textContent = s.audioInfo || '—';
-  document.getElementById('infoVideo').textContent = s.videoInfo || '—';
+  // These strings run long and are ellipsised; keep the full value on hover.
+  for (const [id, val] of [['infoAudio', s.audioInfo], ['infoVideo', s.videoInfo]]) {
+    const el = document.getElementById(id);
+    el.textContent = val || '—';
+    el.title = val || '';
+  }
   document.getElementById('tunerFreq').textContent = fmtTuner(s.tuner) || '—';
   const detail = document.getElementById('connDetail');
   detail.textContent = `${connLabel(s.connection)}${s.connection.ip ? ' @ ' + s.connection.ip : ''}`;
