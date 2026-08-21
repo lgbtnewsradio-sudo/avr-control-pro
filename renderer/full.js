@@ -167,6 +167,7 @@ function renderDiscovered(devices) {
 }
 document.getElementById('btnDiscover').onclick = runDiscovery;
 document.getElementById('btnReconnect').onclick = () => window.integra.reconnect();
+document.getElementById('btnWebSetup').onclick = () => window.integra.openSetup();
 document.getElementById('btnConnect').onclick = () => {
   const ip = document.getElementById('manualIp').value.trim();
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) window.integra.connect({ ip, mode: 'manual' });
@@ -278,6 +279,8 @@ function render(s) {
   // say so instead of leaving the user watching a retry counter.
   document.getElementById('connHint').style.display =
     (s.connection.state === 'no-response' && s.connection.attempt >= 2) ? '' : 'none';
+
+  document.getElementById('btnWebSetup').disabled = !s.connection.ip;
 
   const manual = document.getElementById('manualIp');
   if (!manual.value && s.connection.ip) manual.value = s.connection.ip;

@@ -12,8 +12,13 @@
   .main-grid { display: grid; grid-template-columns: 300px 1fr 320px; gap: 12px; align-items: stretch; }
   .bottom-grid { display: grid; grid-template-columns: 1fr 300px 320px; gap: 12px; }
 
-  .inputs-grid { grid-template-columns: repeat(2, 1fr); }
-  .modes-grid { grid-template-columns: repeat(2, 1fr); }
+  .left-panel { display: flex; flex-direction: column; }
+  .inputs-grid { grid-template-columns: repeat(2, 1fr);
+    flex: 1; grid-auto-rows: minmax(30px, 1fr); }
+  .setup-toggles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+  .setup-toggles .btn { padding: 9px 4px; font-size: 10.5px; line-height: 1.3; }
+  .setup-toggles .btn small { display: block; font-size: 9.5px; color: var(--vfd); margin-top: 2px;
+    text-shadow: 0 0 6px var(--vfd-glow); letter-spacing: 1px; }
   .quick-modes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px; }
   .quick-modes .btn { padding: 7px 4px; font-size: 10px; }
 
@@ -93,11 +98,13 @@
   input.vfader::-webkit-slider-thumb:hover { background: linear-gradient(90deg, #4b5157, #2a2e33 50%, #1d2023); }
 
   .adj-right { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
-  .adj-toggles { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 1fr; gap: 8px; }
-  .adj-toggles .btn { padding: 10px 4px; font-size: 11px; line-height: 1.35; }
-  .adj-toggles .btn small { display: block; font-size: 10px; color: var(--vfd); margin-top: 3px;
-    text-shadow: 0 0 6px var(--vfd-glow); letter-spacing: 1px; }
+  /* The group keeps its natural button size and the slack becomes even space
+     above and below it, rather than stretching the buttons out of proportion. */
+  .mode-block { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 9px; }
+  .sub-label { font-size: 10px; font-weight: 600; letter-spacing: 2.4px; text-transform: uppercase;
+    color: var(--text-dim); }
+  .mode-wide { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .mode-wide .btn { padding: 11px 6px; font-size: 11px; }
 
   /* signal readout, sitting above the buttons like a meter bridge */
   .info-block { border-radius: 7px; border: 1px solid #000;
@@ -155,23 +162,23 @@
     </div>
 
     <div class="main-grid">
-      <!-- LEFT: power / inputs / modes -->
-      <div class="panel screws">
+      <!-- LEFT: power / inputs / setup -->
+      <div class="panel screws left-panel">
         <div class="power-row">
           <button class="btn" id="btnPower">&#x23FB; MAIN</button>
           <button class="btn" id="btnAllOff" title="All zones off">ALL OFF</button>
         </div>
         <h3>Input Selector</h3>
         <div class="grid-btns inputs-grid" id="inputGrid"></div>
-        <h3 style="margin-top:14px;">Listening Mode</h3>
-        <div class="quick-modes">
-          <button class="btn" data-cmd="LMDAUTO">AUTO</button>
-          <button class="btn" data-cmd="LMDMOVIE">MOVIE</button>
-          <button class="btn" data-cmd="LMDMUSIC">MUSIC</button>
-          <button class="btn" data-cmd="LMDGAME">GAME</button>
-          <button class="btn" data-cmd="LMDSTEREO">ST</button>
+        <h3 style="margin-top:14px;">Setup</h3>
+        <div class="setup-toggles">
+          <button class="btn" id="tglDim">DIMMER<small id="dimVal">BRIGHT</small></button>
+          <button class="btn" id="tglHdo">HDMI OUT<small id="hdoVal">MAIN</small></button>
+          <button class="btn" id="tglLtn">LATE NIGHT<small id="ltnVal">OFF</small></button>
+          <button class="btn" id="tglMot">MUSIC OPT<small id="motVal">OFF</small></button>
+          <button class="btn" id="tglSlp">SLEEP<small id="slpVal">OFF</small></button>
+          <button class="btn" id="btnRefresh">SYNC<small>&nbsp;</small></button>
         </div>
-        <div class="grid-btns modes-grid" id="modeGrid"></div>
       </div>
 
       <!-- CENTER: network player / spotify -->
@@ -262,13 +269,17 @@
               <div class="readout"><span>AUDIO</span><b id="infoAudio">—</b></div>
               <div class="readout"><span>VIDEO</span><b id="infoVideo">—</b></div>
             </div>
-            <div class="adj-toggles">
-              <button class="btn" id="tglDim">DIMMER<small id="dimVal">BRIGHT</small></button>
-              <button class="btn" id="tglHdo">HDMI OUT<small id="hdoVal">MAIN</small></button>
-              <button class="btn" id="tglLtn">LATE NIGHT<small id="ltnVal">OFF</small></button>
-              <button class="btn" id="tglMot">MUSIC OPT<small id="motVal">OFF</small></button>
-              <button class="btn" id="tglSlp">SLEEP<small id="slpVal">OFF</small></button>
-              <button class="btn" id="btnRefresh">SYNC<small>&nbsp;</small></button>
+            <!-- Listening modes live beside the AUDIO readout that reports them -->
+            <div class="mode-block">
+              <div class="sub-label">Listening Mode</div>
+              <div class="quick-modes">
+                <button class="btn" data-cmd="LMDAUTO">AUTO</button>
+                <button class="btn" data-cmd="LMDMOVIE">MOVIE</button>
+                <button class="btn" data-cmd="LMDMUSIC">MUSIC</button>
+                <button class="btn" data-cmd="LMDGAME">GAME</button>
+                <button class="btn" data-cmd="LMDSTEREO">ST</button>
+              </div>
+              <div class="grid-btns mode-wide" id="modeGrid"></div>
             </div>
           </div>
         </div>
@@ -311,6 +322,10 @@
           <input type="text" id="manualIp" placeholder="192.168.1.x" style="flex:1;">
           <button class="btn" id="btnConnect">CONNECT</button>
         </div>
+        <button class="btn" id="btnWebSetup" style="width:100%;margin-top:10px;"
+                title="Open the receiver's built-in setup page in your browser">
+          &#x1F310; RECEIVER WEB SETUP
+        </button>
         <div class="info-line" style="margin-top:10px;">STATUS&nbsp; <b id="connDetail">—</b></div>
         <div class="conn-hint" id="connHint" style="display:none;">
           Receiver is accepting connections but refusing control sessions — its

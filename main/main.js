@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { EiscpClient, discover } = require('./eiscp');
@@ -232,6 +232,20 @@ ipcMain.handle('connect', (_e, { ip, port, mode, model }) => {
   state.connection.model = settings.model;
   saveSettings();
   client.connect(ip, settings.port);
+  return true;
+});
+
+/*
+ * Open the receiver's own web setup page in the default browser.
+ * The renderer supplies no URL: it's built here from the address we're actually
+ * connected to and checked against a strict IPv4 pattern, so this can't be used
+ * to open anything other than the receiver on the local network.
+ */
+ipcMain.handle('open-setup', async () => {
+  const ip = state.connection.ip || settings.ip;
+  if (!ip || !/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) return false;
+  if (ip.split('.').some((o) => Number(o) > 255)) return false;
+  await shell.openExternal(`http://${ip}/`);
   return true;
 });
 

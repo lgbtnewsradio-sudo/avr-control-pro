@@ -242,6 +242,7 @@ if (!window.integra) {
     discover: async () => [{ ip: '192.168.1.120', model: 'DRX-3.4', port: 60128, mac: '00:09:B0:AA:BB:CC' }],
     connect: async () => true,
     reconnect: async () => true,
+    openSetup: async () => true,
     onState: () => {}, onDiscovered: () => {},
     win: () => {}, setView: () => {}, miniResize: () => {}, miniPin: () => {},
   };

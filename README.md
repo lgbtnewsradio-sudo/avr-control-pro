@@ -33,6 +33,8 @@ receivers use the same eISCP protocol and are likely to work, but are untested.
   volume strip.
 - **Honest connection state** — the status lamp goes green only after the receiver
   actually answers, and the app reconnects on its own if the link goes quiet.
+- **Straight to the receiver's own setup page** — one click opens its built-in web
+  interface in your default browser, for the settings eISCP doesn't expose.
 - **No cloud, no account** — direct eISCP on your LAN.
 
 ## Two views
