@@ -48,7 +48,8 @@ let volDragging = false;
 mVol.addEventListener('pointerdown', () => { volDragging = true; });
 mVol.addEventListener('pointerup', () => { volDragging = false; });
 mVol.addEventListener('input', () => {
-  document.getElementById('mVolNum').textContent = mVol.value;
+  document.getElementById('mVolNum').textContent =
+    fmtVol(+mVol.value, S ? mainScale(S).step : 1);
   clearTimeout(volT);
   volT = setTimeout(() => cmd('MVL' + h2(+mVol.value)), 100);
 });
@@ -62,7 +63,9 @@ function render(s) {
 
   document.getElementById('btnPower').classList.toggle('power-on', s.power);
   document.getElementById('btnMute').classList.toggle('active', s.mute);
-  document.getElementById('mVolNum').textContent = s.power ? s.volume : '--';
+  const step = mainScale(s).step;
+  if (+mVol.max !== mainScale(s).maxRaw) mVol.max = mainScale(s).maxRaw;
+  document.getElementById('mVolNum').textContent = s.power ? fmtVol(s.volume, step) : '--';
   if (!volDragging) mVol.value = s.volume;
   if (s.input) mInput.value = s.input;
 

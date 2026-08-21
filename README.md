@@ -84,6 +84,14 @@ a UDP broadcast of `ECNQSTN` on the same port.
 Two behaviours are worth knowing about, both learned from a live DRX-3.4:
 
 - **Tone and level values are in half-decibel units.** A reported `+5` is +2.5 dB.
+- **Volume resolution varies by model, and the receiver will tell you.** `NRIQSTN`
+  returns a device description whose zone list carries `volmax` and `volstep`; a
+  `volstep` of `0` means half-dB steps, so the raw `MVL` value is double the number on
+  the front panel (raw 72 = 36.0 = -46.0 dB), while `1` means they match. The app reads
+  this on connect and scales the readout, the knob and the zone sliders to suit. If a
+  receiver doesn't answer `NRIQSTN`, it falls back to whole-dB — deliberately the
+  cautious guess, since assuming a finer scale than the receiver has would send raw
+  values it clamps to maximum volume.
 - **Spotify Connect cover art does not arrive over eISCP.** The receiver answers the
   `NJA` artwork request with "no image" and instead serves the current cover from its own
   HTTP endpoint at `/album_art.cgi`. That response also carries a stray CGI header block

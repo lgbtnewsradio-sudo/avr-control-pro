@@ -40,7 +40,25 @@ const LTN_LABEL = { '00': 'OFF', '01': 'LOW', '02': 'HIGH', '03': 'AUTO' };
 const cmd = (m) => window.integra.cmd(m);
 const h2 = (n) => Math.max(0, Math.round(n)).toString(16).toUpperCase().padStart(2, '0');
 const signed = (n) => (n === 0 ? '00' : (n > 0 ? '+' : '-') + Math.abs(n).toString(16).toUpperCase());
-const volDb = (v) => (v <= 0 ? '---' : ((v - 82) > 0 ? '+' : '') + (v - 82).toFixed(1) + 'dB');
+/*
+ * The receiver reports volume as a raw step count. On units with half-dB
+ * resolution one raw step is 0.5, so the number on the front panel is
+ * raw * step, and 82.0 on that absolute scale is 0 dB.
+ */
+const ZERO_DB_ABS = 82;
+const SAFE_SCALE = { step: 1, volmax: 100, maxRaw: 100 };
+const mainScale = (s) => (s && s.scale && s.scale.main) || SAFE_SCALE;
+const zoneScale = (s, z) => (s && s.scale && s.scale[z]) || SAFE_SCALE;
+const volAbs = (raw, step) => raw * (step || 1);
+const fmtVol = (raw, step) => {
+  const a = volAbs(raw, step);
+  return (step === 0.5) ? a.toFixed(1) : String(a);
+};
+const volDb = (raw, step) => {
+  if (raw <= 0) return '---';
+  const db = volAbs(raw, step) - ZERO_DB_ABS;
+  return (db > 0 ? '+' : '') + db.toFixed(1) + 'dB';
+};
 const esc = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function fmtTuner(d) {
@@ -85,8 +103,9 @@ function updateVFD(s) {
   if (!el('vfdInput')) return;
 
   el('vfdInput').textContent = on ? (INPUT_LABEL[s.input] || (s.input ? 'IN ' + s.input : '—')) : 'STANDBY';
-  el('vfdVolNum').textContent = on ? (s.mute ? '--' : String(s.volume)) : '';
-  el('vfdVolDb').textContent = on && !s.mute ? volDb(s.volume) : '';
+  const step = mainScale(s).step;
+  el('vfdVolNum').textContent = on ? (s.mute ? '--' : fmtVol(s.volume, step)) : '';
+  el('vfdVolDb').textContent = on && !s.mute ? volDb(s.volume, step) : '';
 
   // main line: track info when NET source is playing, else input + mode
   let main = '';
@@ -198,11 +217,16 @@ function demoArt() {
 if (!window.integra) {
   const demoState = {
     connection: { state: 'connected', ip: '192.168.1.120', model: 'DRX-3.4' },
-    power: true, volume: 46, maxVolume: 100, mute: false,
+    scale: {
+      main: { step: 0.5, volmax: 100, maxRaw: 200 },
+      z2: { step: 0.5, volmax: 100, maxRaw: 200 },
+      z3: { step: 0.5, volmax: 100, maxRaw: 200 },
+    },
+    power: true, volume: 128, maxVolume: 100, mute: false,
     input: '2B', mode: '82',
     bass: 2, treble: 0, swl: 3, ctl: 0,
     dimmer: '00', sleep: 0, hdo: '01', ltn: '00', mot: '01',
-    z2: { power: true, volume: 32, mute: false, input: '2B' },
+    z2: { power: true, volume: 64, mute: false, input: '2B' },
     z3: { power: false, volume: 0, mute: false, input: null },
     tuner: '09790',
     audioInfo: 'NET,Spotify,48 kHz,2.0 ch,,Neural:X,5.1.2 ch',

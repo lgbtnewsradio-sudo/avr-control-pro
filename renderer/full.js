@@ -92,8 +92,11 @@ document.getElementById('z3Input').onchange = (e) => e.target.value && cmd('SL3'
 /* ---------------- volume knob ---------------- */
 const knob = document.getElementById('volKnob');
 const knobDot = document.getElementById('knobDot');
-const MAXV = 82; // practical ceiling for the DRX-3.4 dial
+// Knob spans silence to 0 dB. Expressed in raw steps, so it follows whatever
+// resolution the receiver reported rather than assuming whole-dB units.
+let MAXV = 82;
 const A0 = -135, A1 = 135;
+function setKnobRange(step) { MAXV = Math.round(ZERO_DB_ABS / (step || 1)); }
 
 (function drawTicks() {
   const c = document.getElementById('tickRing').getContext('2d');
@@ -127,9 +130,10 @@ knob.addEventListener('pointerdown', (e) => { dragging = true; knob.setPointerCa
 knob.addEventListener('pointermove', (e) => {
   if (!dragging) return;
   const v = volFromEvent(e);
+  const step = S ? mainScale(S).step : 1;
   setKnob(v);
-  document.getElementById('volNum').textContent = v;
-  document.getElementById('volDb').textContent = volDb(v);
+  document.getElementById('volNum').textContent = fmtVol(v, step);
+  document.getElementById('volDb').textContent = volDb(v, step);
   clearTimeout(volSendT);
   volSendT = setTimeout(() => cmd('MVL' + h2(v)), 80);
 });
@@ -189,8 +193,10 @@ function render(s) {
   document.getElementById('btnPower').classList.toggle('power-on', on);
   document.getElementById('btnMute').classList.toggle('active', s.mute);
 
-  document.getElementById('volNum').textContent = on ? s.volume : '--';
-  document.getElementById('volDb').textContent = on ? volDb(s.volume) : '';
+  const step = mainScale(s).step;
+  setKnobRange(step);
+  document.getElementById('volNum').textContent = on ? fmtVol(s.volume, step) : '--';
+  document.getElementById('volDb').textContent = on ? volDb(s.volume, step) : '';
   if (!dragging) setKnob(s.volume);
 
   inputGrid.querySelectorAll('.btn').forEach((b) =>
@@ -238,8 +244,12 @@ function render(s) {
   document.getElementById('z3Power').classList.toggle('power-on', s.z3.power);
   document.getElementById('z2Mute').classList.toggle('active', s.z2.mute);
   document.getElementById('z3Mute').classList.toggle('active', s.z3.mute);
-  setSliderIfIdle('z2Vol', s.z2.volume);
-  setSliderIfIdle('z3Vol', s.z3.volume);
+  for (const z of ['z2', 'z3']) {
+    const zs = zoneScale(s, z);
+    const el = document.getElementById(z + 'Vol');
+    if (+el.max !== zs.maxRaw) el.max = zs.maxRaw;
+    setSliderIfIdle(z + 'Vol', s[z].volume, (v) => fmtVol(v, zs.step));
+  }
   if (s.z2.input) document.getElementById('z2Input').value = s.z2.input;
   if (s.z3.input) document.getElementById('z3Input').value = s.z3.input;
 

@@ -25,6 +25,19 @@ function saveSettings() {
 /* ------------------------------------------------------------------ */
 const state = {
   connection: { state: 'disconnected', ip: null, model: null },
+  /*
+   * Volume scale, read from the receiver's own NRI device description.
+   * volstep=0 means half-dB steps, so the raw MVL value is twice the number
+   * shown on the front panel; volstep=1 means raw == displayed. Defaulting to
+   * whole-dB is the safe guess: if we under-estimate the scale the knob simply
+   * can't reach full output, whereas over-estimating would send a raw value the
+   * receiver clamps to maximum volume.
+   */
+  scale: {
+    main: { step: 1, volmax: 100, maxRaw: 100 },
+    z2: { step: 1, volmax: 100, maxRaw: 100 },
+    z3: { step: 1, volmax: 100, maxRaw: 100 },
+  },
   power: false,
   volume: 0, maxVolume: 100, mute: false,
   input: null,            // SLI hex code
@@ -57,10 +70,26 @@ function signedHex(d) {
   return hex(d);
 }
 
-const QUERIES_MAIN = ['PWRQSTN','MVLQSTN','AMTQSTN','SLIQSTN','LMDQSTN','TFRQSTN','SWLQSTN','CTLQSTN',
+const QUERIES_MAIN = ['NRIQSTN','PWRQSTN','MVLQSTN','AMTQSTN','SLIQSTN','LMDQSTN','TFRQSTN','SWLQSTN','CTLQSTN',
   'DIMQSTN','SLPQSTN','HDOQSTN','LTNQSTN','MOTQSTN','TUNQSTN','IFAQSTN','IFVQSTN'];
 const QUERIES_ZONES = ['ZPWQSTN','ZVLQSTN','ZMTQSTN','SLZQSTN','PW3QSTN','VL3QSTN','MT3QSTN','SL3QSTN'];
 const QUERIES_NET = ['NJAENA','NTIQSTN','NATQSTN','NALQSTN','NSTQSTN','NTMQSTN','NJAREQ'];
+
+// <zone id="1" value="1" name="Main" volmax="100" volstep="0" ... />
+function parseNri(xml) {
+  const zoneKey = { 1: 'main', 2: 'z2', 3: 'z3' };
+  const re = /<zone\s+id="(\d)"[^>]*?volmax="(\d+)"[^>]*?volstep="(\d)"/g;
+  let m, found = false;
+  while ((m = re.exec(xml)) !== null) {
+    const key = zoneKey[Number(m[1])];
+    const volmax = Number(m[2]);
+    if (!key || !volmax) continue;
+    const step = Number(m[3]) === 0 ? 0.5 : 1;
+    state.scale[key] = { step, volmax, maxRaw: Math.round(volmax / step) };
+    found = true;
+  }
+  return found;
+}
 
 function queryAll() {
   [...QUERIES_MAIN, ...QUERIES_ZONES, ...QUERIES_NET].forEach((q) => client.send(q));
@@ -108,7 +137,15 @@ client.on('art', (dataUrl) => {
 client.on('message', ({ cmd, data }) => {
   switch (cmd) {
     case 'PWR': state.power = data === '01'; break;
-    case 'MVL': state.volume = hex(data); break;
+    case 'MVL':
+      state.volume = hex(data);
+      // Safety net for units that don't answer NRIQSTN: a raw value above the
+      // assumed maximum can only mean the scale is finer than we thought.
+      if (state.volume > state.scale.main.maxRaw && state.scale.main.step === 1) {
+        state.scale.main = { step: 0.5, volmax: state.scale.main.volmax,
+                             maxRaw: state.scale.main.volmax * 2 };
+      }
+      break;
     case 'AMT': state.mute = data === '01'; break;
     case 'SLI':
       state.input = data;
@@ -142,6 +179,7 @@ client.on('message', ({ cmd, data }) => {
     case 'TUN': state.tuner = data; break;
     case 'IFA': state.audioInfo = data; break;
     case 'IFV': state.videoInfo = data; break;
+    case 'NRI': parseNri(data); break;
     case 'NTI':
       if (data !== state.net.title) {
         state.net.title = data;
