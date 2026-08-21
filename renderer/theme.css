@@ -254,6 +254,8 @@ select, input[type='text'] {
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.7);
 }
 select:focus, input[type='text']:focus { border-color: #2a4a68; }
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-thumb { background: #2a2e32; border-radius: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #33383d; border-radius: 5px;
+  border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: #454b51; background-clip: padding-box; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.35); border-radius: 5px; }

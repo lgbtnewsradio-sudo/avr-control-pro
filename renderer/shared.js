@@ -61,6 +61,17 @@ const volDb = (raw, step) => {
 };
 const esc = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+/*
+ * IFA/IFV arrive as fixed comma-separated field lists, with an empty slot for
+ * every value the receiver can't report — so a typical reply reads
+ * "ANALOG,,,,All Ch Stereo,5.1.4 ch,". Drop the blanks and separate what's left
+ * so the readout shows the signal rather than the punctuation.
+ */
+function fmtSignal(raw) {
+  const parts = String(raw || '').split(',').map((t) => t.trim()).filter(Boolean);
+  return parts.join('  ·  ');
+}
+
 function fmtTuner(d) {
   if (!d) return '';
   const n = parseInt(d, 10);

@@ -267,8 +267,9 @@ function render(s) {
   // These strings run long and are ellipsised; keep the full value on hover.
   for (const [id, val] of [['infoAudio', s.audioInfo], ['infoVideo', s.videoInfo]]) {
     const el = document.getElementById(id);
-    el.textContent = val || '—';
-    el.title = val || '';
+    const clean = fmtSignal(val);
+    el.textContent = clean || '—';
+    el.title = clean;
   }
   document.getElementById('tunerFreq').textContent = fmtTuner(s.tuner) || '—';
   const detail = document.getElementById('connDetail');
