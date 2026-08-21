@@ -80,6 +80,7 @@ function render(s) {
     if (!art.dataset.src || art.dataset.src !== n.art) {
       art.dataset.src = n.art;
       art.innerHTML = '';
+      art.removeAttribute('aria-hidden'); // the <img> alt now carries the meaning
       const im = new Image();
       im.alt = [n.title, n.artist].filter(Boolean).length
         ? `Cover art: ${[n.title, n.artist].filter(Boolean).join(' by ')}` : 'Album cover art';
@@ -88,7 +89,8 @@ function render(s) {
       art.appendChild(im);
     }
   } else if (art.dataset.src) {
-    art.innerHTML = '&#x266B;';
+    art.innerHTML = '&#x266B;';           // placeholder glyph, nothing to announce
+    art.setAttribute('aria-hidden', 'true');
     delete art.dataset.src;
   }
   document.getElementById('btnPlayPause').innerHTML = n.status === 'P' ? '&#x23F8;' : '&#x25B6;';

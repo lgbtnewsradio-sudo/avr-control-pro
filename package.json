@@ -12,7 +12,8 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder --win nsis",
     "dist:store": "node tools/msix.js",
-    "a11y": "electron tools/a11y.js"
+    "a11y": "electron tools/a11y.js",
+    "axtree": "electron tools/axtree.js"
   },
   "devDependencies": {
     "axe-core": "^4.13.0",

@@ -72,6 +72,7 @@ npm run dist:store   # Store MSIX      → dist/*.msix
 npm run icons        # regenerate app icon + Store tiles
 npm run shots        # regenerate docs screenshots
 npm run a11y         # accessibility audit (axe-core + custom checks)
+npm run axtree       # dump the accessibility tree a screen reader reads
 ```
 
 ## Accessibility
@@ -94,6 +95,24 @@ Volume 64.0, -18.0dB. Listening mode DTS NEURAL:X...").
 Keyboard notes: the volume knob is a `role="slider"` — arrows step, Shift+arrow
 steps by five, Page Up/Down jump by ten, Home/End go to the ends. Connection
 state changes are announced through a polite live region.
+
+### Screen readers
+
+`npm run axtree` prints the computed accessibility tree — the same names, roles
+and values Chromium hands to Narrator, NVDA and JAWS through the platform
+bridge. Both views currently expose **zero unnamed controls**. The panel
+replica reads as one sentence rebuilt from live state, for example:
+
+> Front panel display. Source NET. Volume 64.0, -18.0dB. Listening mode DTS
+> NEURAL:X. Playing Aurora Field — Neon Cascade. Zone 2 on.
+
+and the knob reads as `Master volume, slider, 64.0, -18.0dB`.
+
+Note that this verifies the data a screen reader is given, not the audio it
+produces. Windows offers no way to capture Narrator's speech, so confirming how
+it *sounds* — pacing, pronunciation of "dB", whether the panel sentence is too
+long in practice — still needs a manual pass with Narrator on
+(Ctrl+Win+Enter, then Caps Lock + arrow keys to move through the window).
 
 See [STORE.md](STORE.md) for the Microsoft Store submission checklist — product identity,
 the payout and tax profile required for paid apps, price tier, and the free trial.

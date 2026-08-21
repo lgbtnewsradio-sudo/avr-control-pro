@@ -194,8 +194,8 @@
       <!-- LEFT: power / inputs / setup -->
       <div class="panel screws left-panel">
         <div class="power-row">
-          <button class="btn" id="btnPower">&#x23FB; MAIN</button>
-          <button class="btn" id="btnAllOff" title="All zones off">ALL OFF</button>
+          <button class="btn" id="btnPower" aria-label="Main power">&#x23FB; MAIN</button>
+          <button class="btn" id="btnAllOff" aria-label="All zones off" title="All zones off">ALL OFF</button>
         </div>
         <h3>Input Selector</h3>
         <div class="grid-btns inputs-grid" id="inputGrid"></div>
@@ -215,7 +215,7 @@
         <h3>Network Player &nbsp;·&nbsp; Spotify Connect</h3>
         <div class="player">
           <div class="svc-badge" id="svcBadge" style="display:none;"><span class="dot"></span>SPOTIFY CONNECT</div>
-          <div class="art-frame"><span class="placeholder" id="artPh">&#x266B;</span><img id="artImg" alt="" style="display:none;"></div>
+          <div class="art-frame"><span class="placeholder" id="artPh" aria-hidden="true">&#x266B;</span><img id="artImg" alt="" style="display:none;"></div>
           <div class="track-meta">
             <div class="title" id="ntTitle">—</div>
             <div class="artist" id="ntArtist"></div>
@@ -232,9 +232,9 @@
             <button class="btn round" data-cmd="NTCTRUP" aria-label="Next track" title="Next">&#x23ED;</button>
           </div>
           <div class="shuf-rep">
-            <button class="btn" id="btnShuffle" data-cmd="NTCRANDOM">&#x1F500; SHUFFLE</button>
-            <button class="btn" id="btnRepeat" data-cmd="NTCREPEAT">&#x1F501; REPEAT</button>
-            <button class="btn" data-cmd="NTCSTOP">&#x23F9; STOP</button>
+            <button class="btn" id="btnShuffle" aria-label="Shuffle" data-cmd="NTCRANDOM">&#x1F500; SHUFFLE</button>
+            <button class="btn" id="btnRepeat" aria-label="Repeat" data-cmd="NTCREPEAT">&#x1F501; REPEAT</button>
+            <button class="btn" data-cmd="NTCSTOP" aria-label="Stop">&#x23F9; STOP</button>
           </div>
         </div>
       </div>
@@ -253,7 +253,7 @@
         <div class="vol-readout"><span id="volNum">--</span> <small id="volDb"></small></div>
         <div class="row">
           <button class="btn" data-cmd="MVLDOWN" aria-label="Volume down">&#x2212;</button>
-          <button class="btn danger" id="btnMute">MUTE</button>
+          <button class="btn danger" id="btnMute" aria-label="Mute">MUTE</button>
           <button class="btn" data-cmd="MVLUP" aria-label="Volume up">+</button>
         </div>
 
@@ -346,8 +346,8 @@
         <h3>Connection</h3>
         <div class="status-bar"><span>STATUS</span><b id="connDetail" role="status" aria-live="polite">—</b></div>
         <div class="row" style="margin-bottom:8px;">
-          <button class="btn" id="btnDiscover" style="flex:1;">&#x1F50D; AUTO DISCOVER</button>
-          <button class="btn" id="btnReconnect" title="Drop and re-establish the control session">&#x21BB; RECONNECT</button>
+          <button class="btn" id="btnDiscover" aria-label="Auto discover receivers" style="flex:1;">&#x1F50D; AUTO DISCOVER</button>
+          <button class="btn" id="btnReconnect" aria-label="Reconnect" title="Drop and re-establish the control session">&#x21BB; RECONNECT</button>
         </div>
         <div class="disc-list" id="discList"><span class="muted" style="font-size:11px;">No scan yet.</span></div>
         <h3 style="margin-top:6px;">Manual IP</h3>
@@ -355,7 +355,7 @@
           <input type="text" id="manualIp" placeholder="192.168.1.x" style="flex:1;">
           <button class="btn" id="btnConnect">CONNECT</button>
         </div>
-        <button class="btn" id="btnWebSetup" style="width:100%;margin-top:22px;"
+        <button class="btn" id="btnWebSetup" aria-label="Open receiver's web setup page" style="width:100%;margin-top:22px;"
                 title="Open the receiver's built-in setup page in your browser">
           &#x1F310; RECEIVER WEB SETUP
         </button>
