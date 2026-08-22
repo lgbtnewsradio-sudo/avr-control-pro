@@ -300,7 +300,12 @@ function createFullWin() {
   if (fullWin && !fullWin.isDestroyed()) { fullWin.show(); fullWin.focus(); return; }
   fullWin = new BrowserWindow({
     ...winCommon,
-    width: 1440, height: 940, minWidth: 1150, minHeight: 780,
+    width: 1440, height: 940,
+    // The layout collapses to a single column below 1000px and scrolls, so the
+    // floor is set low enough to fit a 1366x768 laptop (~728px of usable height
+    // after the taskbar) and the classic 1024x768 baseline. A stricter minimum
+    // would stop the window fitting on those screens at all.
+    minWidth: 900, minHeight: 600,
     title: 'AVR Control Pro',
   });
   fullWin.loadFile(path.join(__dirname, '..', 'renderer', 'full.html'));

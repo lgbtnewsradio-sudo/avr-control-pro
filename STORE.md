@@ -112,6 +112,32 @@ whose version isn't higher than the last one uploaded.
 it onto a 1366×768 canvas if you want it as a second image. Regenerate both any time with
 `npm run shots`.
 
+**System requirements → hardware preferences**
+
+Leave every peripheral box unchecked under both Minimum and Recommended —
+touch, keyboard, mouse, camera, NFC, Bluetooth, microphone and telephony are all
+genuinely not required. In particular **do not tick Bluetooth**: the BLUETOOTH
+button in the app selects the *receiver's* Bluetooth input over the network and
+has nothing to do with the PC's radio.
+
+What is actually required, for the description field:
+
+> Requires a network connection to an Integra or Onkyo receiver on the same
+> local network — the app controls hardware and does nothing on its own. The
+> receiver's "Network Standby" setting must be on to control it from standby.
+> 64-bit Windows 10 (1809) or Windows 11. Minimum window 900 x 600, so any
+> display from 1024 x 768 upward works; the full layout needs about 1150 px of
+> window height, and scrolls on shorter screens. No dedicated graphics, and
+> about 250 MB of memory in use.
+
+Verified sizes: the layout is clipping-free and fully scrollable at 1366 x 728
+(a 1366 x 768 laptop after the taskbar), 1280 x 700, 1024 x 640 and down to
+700 x 520, where it collapses to a single column.
+
+**Architecture:** the package is **x64 only**. It will run on Windows on ARM
+under emulation, but if you want native ARM64 you would need to add that target
+and test it — nothing here has been.
+
 **Category:** Music → Tools, or Utilities + tools.
 
 **Age rating:** the questionnaire lands on 3+ / Everyone — no user content, ads, or data
