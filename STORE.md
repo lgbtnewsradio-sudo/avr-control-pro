@@ -6,12 +6,31 @@ account.
 
 ---
 
-## Status of the trademark question
+## Naming: the reserved name carries two trademarks
 
-**Done.** The product is now **AVR Control Pro** — a name you own. The in-app title bar
-reads "AVR CONTROL PRO" followed by whichever receiver model discovery found, so it
-adapts to the customer's hardware instead of hard-coding one model. The repository, the
-site and the package identity all use `avr-control-pro`.
+The reserved Store name is **"Onkyo Integra AVR Control"**, so that is the name
+customers see, and it is the highest-risk item in this submission. Store policy
+10.1/10.2 covers using branding you do not own; "Onkyo" and "Integra" are both
+Onkyo/Integra marks. Certification may pass it, or may reject it, and a listing
+can also be pulled later on a trademark complaint.
+
+**The fix does not require starting over.** The package identity string is
+internal and permanent, but the *displayed* name is just whichever reserved name
+you point at:
+
+1. Partner Center → your app → **Product management → Manage app names**, and
+   reserve **AVR Control Pro** as an additional name.
+2. Change `build.appx.displayName` in `package.json` to `AVR Control Pro`, and
+   select that name for the Store listing.
+3. Rebuild with `npm run dist:store`.
+
+Compatibility then lives in the description, which is the safe place for it:
+
+> Works with Integra and Onkyo network receivers.
+
+The in-app title bar already reads "AVR CONTROL PRO" followed by whichever model
+discovery found, so it adapts to the customer's hardware. The repository and site
+also use `avr-control-pro` — only the reserved Store name differs.
 
 Compatibility now lives in the description, which is the safe place for it:
 
@@ -46,18 +65,23 @@ your submission, so do it early:
 
 Both live under Partner Center → Settings → Account settings → Payout and tax.
 
-### 3. Copy your product identity into `package.json`
+### 3. Product identity — done
 
-Partner Center → your app → **Product management → Product identity**. Replace the three
-placeholders in `build.appx`:
+`build.appx` in `package.json` now carries the real values from Partner Center,
+and a rebuilt package has been verified to match them exactly:
 
-| package.json field     | Partner Center value                    | Looks like                       |
-| ---------------------- | --------------------------------------- | -------------------------------- |
-| `identityName`         | Package/Identity/Name                   | `12345MikeMoran.AVRControlPro`   |
-| `publisher`            | Package/Identity/Publisher              | `CN=A1B2C3D4-1234-5678-9ABC-...` |
-| `publisherDisplayName` | Package/Properties/PublisherDisplayName | your publisher display name      |
+| package.json field     | value                                          |
+| ---------------------- | ---------------------------------------------- |
+| `identityName`         | `BlackDogDevelopersLLC.OnkyoIntegraAVRControl`  |
+| `publisher`            | `CN=2143F09A-4C5B-4665-BDDB-40F66211FF64`       |
+| `publisherDisplayName` | `Black Dog Developers, LLC`                     |
+| `displayName`          | `Onkyo Integra AVR Control`                     |
 
-They must match **exactly** or the upload is rejected.
+Store ID **9NNRM8HRC8SP** · <https://apps.microsoft.com/detail/9NNRM8HRC8SP>
+
+`displayName` must match a name you have **reserved**, or the package is rejected
+at upload — which is why it says "Onkyo Integra AVR Control" rather than
+"AVR Control Pro". See the naming note below before you submit.
 
 ### 4. Set the price to $5.99
 
