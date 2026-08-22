@@ -6,31 +6,34 @@ account.
 
 ---
 
-## Naming: the reserved name carries two trademarks
+## Naming — one step left in Partner Center
 
-The reserved Store name is **"Onkyo Integra AVR Control"**, so that is the name
-customers see, and it is the highest-risk item in this submission. Store policy
-10.1/10.2 covers using branding you do not own; "Onkyo" and "Integra" are both
-Onkyo/Integra marks. Certification may pass it, or may reject it, and a listing
-can also be pulled later on a trademark complaint.
+The package now declares **AVR Control Pro** as its display name, which keeps
+both trademarks out of the customer-facing name. Store policy 10.1/10.2 covers
+using branding you do not own, and "Onkyo" and "Integra" are both Onkyo/Integra
+marks — a name built from them risks rejection at certification and a takedown
+later on a complaint.
 
-**The fix does not require starting over.** The package identity string is
-internal and permanent, but the *displayed* name is just whichever reserved name
-you point at:
+> **Before you upload:** Partner Center → your app → **Product management →
+> Manage app names** → reserve **AVR Control Pro**. Partner Center validates the
+> package display name against your reserved names, so the upload is rejected
+> until that name exists on the account. Then pick it as the listing name.
 
-1. Partner Center → your app → **Product management → Manage app names**, and
-   reserve **AVR Control Pro** as an additional name.
-2. Change `build.appx.displayName` in `package.json` to `AVR Control Pro`, and
-   select that name for the Store listing.
-3. Rebuild with `npm run dist:store`.
+Your original reserved name, "Onkyo Integra AVR Control", can stay reserved —
+having it costs nothing and blocks anyone else taking it. Just don't use it as
+the displayed name.
 
-Compatibility then lives in the description, which is the safe place for it:
+The identity string `BlackDogDevelopersLLC.OnkyoIntegraAVRControl` is derived
+from that first reserved name and is permanent, but it is internal plumbing that
+customers never see, so it does not need changing.
+
+Compatibility belongs in the description, which is the safe place for it:
 
 > Works with Integra and Onkyo network receivers.
 
-The in-app title bar already reads "AVR CONTROL PRO" followed by whichever model
-discovery found, so it adapts to the customer's hardware. The repository and site
-also use `avr-control-pro` — only the reserved Store name differs.
+The in-app title bar reads "AVR CONTROL PRO" followed by whichever model
+discovery found, and the repository and site use `avr-control-pro`, so
+everything now lines up on one name.
 
 Compatibility now lives in the description, which is the safe place for it:
 
@@ -75,13 +78,13 @@ and a rebuilt package has been verified to match them exactly:
 | `identityName`         | `BlackDogDevelopersLLC.OnkyoIntegraAVRControl`  |
 | `publisher`            | `CN=2143F09A-4C5B-4665-BDDB-40F66211FF64`       |
 | `publisherDisplayName` | `Black Dog Developers, LLC`                     |
-| `displayName`          | `Onkyo Integra AVR Control`                     |
+| `displayName`          | `AVR Control Pro` *(reserve this name first)*   |
 
 Store ID **9NNRM8HRC8SP** · <https://apps.microsoft.com/detail/9NNRM8HRC8SP>
 
 `displayName` must match a name you have **reserved**, or the package is rejected
-at upload — which is why it says "Onkyo Integra AVR Control" rather than
-"AVR Control Pro". See the naming note below before you submit.
+at upload. See the naming note above — reserving "AVR Control Pro" is the one
+remaining Partner Center step.
 
 ### 4. Set the price to $5.99
 

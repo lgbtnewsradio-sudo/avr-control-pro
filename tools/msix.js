@@ -73,5 +73,4 @@ if (res.status !== 0 || !fs.existsSync(out)) {
 }
 const mb = (fs.statSync(out).size / 1048576).toFixed(1);
 console.log(`\nMSIX ready: ${path.relative(ROOT, out)}  (${mb} MB)`);
-console.log('Unsigned — Partner Center signs it on upload. Replace the appx identity');
-console.log('fields in package.json with your Partner Center values first (see STORE.md).');
+console.log('Unsigned — Partner Center signs it on ingestion; do not sign it yourself.');

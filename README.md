@@ -5,7 +5,7 @@ live replica of the receiver's front-panel display, full control of every input,
 listening mode and trim, and Spotify Connect track info with album art.
 
 **[Landing page →](https://lgbtnewsradio-sudo.github.io/avr-control-pro/)** · **$5.99 on the
-Microsoft Store** (listing in certification)
+Microsoft Store** (not yet submitted)
 
 ![The full window](docs/screenshots/full-view.png)
 
@@ -170,7 +170,7 @@ docs/          landing page + privacy policy (GitHub Pages)
 
 ## Licence
 
-Copyright (c) 2026 Mike Moran. All rights reserved. You may read and audit this source,
+Copyright (c) 2026 Black Dog Developers, LLC. All rights reserved. You may read and audit this source,
 and build it for your own personal use on hardware you own. Redistributing builds, or
 selling this software or derivatives of it, requires written permission. See
 [LICENSE](LICENSE) for the exact terms.
