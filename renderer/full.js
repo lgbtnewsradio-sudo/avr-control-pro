@@ -20,11 +20,7 @@ document.getElementById('btnAllOff').onclick = () => { cmd('PWR00'); cmd('ZPW00'
 document.getElementById('btnMute').onclick = () => cmd('AMTTG');
 document.getElementById('btnPlayPause').onclick = () =>
   cmd(S && S.net.status === 'P' ? 'NTCPAUSE' : 'NTCPLAY');
-document.getElementById('btnRefresh').onclick = () =>
-  ['PWRQSTN','MVLQSTN','AMTQSTN','SLIQSTN','LMDQSTN','TFRQSTN','SWLQSTN','CTLQSTN','DIMQSTN','SLPQSTN',
-   'HDOQSTN','LTNQSTN','MOTQSTN','ZPWQSTN','ZVLQSTN','ZMTQSTN','SLZQSTN','PW3QSTN','VL3QSTN','MT3QSTN',
-   'SL3QSTN','TUNQSTN','IFAQSTN','IFVQSTN','NTIQSTN','NATQSTN','NALQSTN','NSTQSTN','NTMQSTN','NJAREQ']
-    .forEach((q) => cmd(q));
+document.getElementById('btnRefresh').onclick = () => window.integra.sync();
 
 /* input + mode grids */
 const inputGrid = document.getElementById('inputGrid');

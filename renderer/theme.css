@@ -166,9 +166,9 @@ body {
   position: relative; width: 168px; height: 168px; border-radius: 50%;
   cursor: grab;
   background:
-    conic-gradient(from 130deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 22%,
+    conic-gradient(from 180deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 22%,
       rgba(255,255,255,0.05) 48%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.10)),
-    radial-gradient(circle at 38% 32%, #3b4045 0%, #24282c 42%, #101214 100%);
+    radial-gradient(circle at 50% 30%, #3b4045 0%, #24282c 42%, #101214 100%);
   border: 1px solid #000;
   box-shadow:
     inset 0 2px 3px rgba(255,255,255,0.12), inset 0 -3px 6px rgba(0,0,0,0.7),
@@ -177,7 +177,7 @@ body {
 .knob:active { cursor: grabbing; }
 .knob::before { /* center cap */
   content: ''; position: absolute; inset: 26px; border-radius: 50%;
-  background: radial-gradient(circle at 40% 32%, #2c3034, #17191c 70%);
+  background: radial-gradient(circle at 50% 32%, #2c3034, #17191c 70%);
   box-shadow: inset 0 1px 1px rgba(255,255,255,0.08), 0 3px 8px rgba(0,0,0,0.7);
 }
 .knob .dot {
@@ -243,6 +243,29 @@ input[type='range']::-webkit-slider-thumb:hover { background: linear-gradient(18
 .titlebar button:hover { background: rgba(255,255,255,0.07); color: #fff; }
 .titlebar button.close:hover { background: var(--danger); color: #fff; }
 .titlebar .tbtn { width: auto; padding: 0 10px; font-size: 10px; letter-spacing: 1px; font-weight: 700; }
+
+/* ---------------- icon-only buttons ---------------- */
+/*
+ * .btn applies letter-spacing, which appends a trailing gap after the last
+ * character. On a word that is invisible; on a single centred glyph it shifts
+ * it left by half the spacing. Zero it — and the line box — wherever a button
+ * holds nothing but an icon.
+ */
+.btn.round,
+.titlebar button,
+.mini-bar button,
+.mini-meta .transport .btn,
+.mini-vol .btn,
+#z2Power, #z3Power,
+[data-cmd='MVLUP'], [data-cmd='MVLDOWN'],
+.navpad .btn[data-cmd$='UP'],
+.navpad .btn[data-cmd$='DOWN'],
+.navpad .btn[data-cmd$='LEFT'],
+.navpad .btn[data-cmd$='RIGHT'] {
+  letter-spacing: normal;
+  line-height: 1;
+  text-indent: 0;
+}
 
 /* ---------------- accessibility ---------------- */
 /* Every control needs a focus ring that survives the dark faceplate. */

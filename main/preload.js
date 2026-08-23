@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('integra', {
   cmd: (message) => ipcRenderer.send('cmd', message),
+  sync: () => ipcRenderer.send('sync'),
   getState: () => ipcRenderer.invoke('get-state'),
   discover: () => ipcRenderer.invoke('discover'),
   connect: (opts) => ipcRenderer.invoke('connect', opts),

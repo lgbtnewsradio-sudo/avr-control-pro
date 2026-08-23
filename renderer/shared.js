@@ -272,6 +272,7 @@ if (!window.integra) {
   };
   window.integra = {
     cmd: (m) => console.log('[demo] cmd', m),
+    sync: () => console.log('[demo] sync'),
     getState: async () => ({ state: demoState, settings: { ip: '192.168.1.120' } }),
     discover: async () => [{ ip: '192.168.1.120', model: 'DRX-3.4', port: 60128, mac: '00:09:B0:AA:BB:CC' }],
     connect: async () => true,

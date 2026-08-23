@@ -218,6 +218,10 @@ ipcMain.handle('get-state', () => ({ state, settings }));
 
 ipcMain.on('cmd', (_e, message) => client.send(message));
 
+// Re-read everything. Uses the same list the app sends on connect, so the two
+// can't drift apart — they did once, and SYNC quietly stopped matching.
+ipcMain.on('sync', () => queryAll());
+
 ipcMain.handle('discover', async () => {
   const devices = await discover();
   return devices;
