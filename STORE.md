@@ -114,11 +114,40 @@ trial is live, add a line to the listing description saying so.
 npm run dist:store
 ```
 
-Produces `dist/avr-control-pro-1.1.0-x64.msix`. Upload under **Packages**. Don't sign it
+Produces `dist/avr-control-pro-1.1.1-x64.msix`. Upload under **Packages**. Don't sign it
 yourself — the Store re-signs on ingestion.
 
-Bump `version` in `package.json` for every resubmission; the Store rejects a package
-whose version isn't higher than the last one uploaded.
+**Close the app before building.** If `dist/win-unpacked` is locked by a running
+copy, electron-builder aborts with `EBUSY` before it stages anything.
+
+Bump `version` in `package.json` only once the Store has *accepted* a package at
+the current number. A rejected upload never counted, so you can fix and re-upload
+at the same version.
+
+### 7. Two things Partner Center says on upload
+
+**MinVersion (blocking).** The Store refuses any MSIX targeting
+`MinVersion <= 10.0.17134.0`. electron-builder defaults to `10.0.14316.0`, so
+`build.appx` now pins:
+
+```json
+"minVersion": "10.0.17763.0",       // Windows 10 1809
+"maxVersionTested": "10.0.22621.0"
+```
+
+That matches the minimum the listing already claims, so nothing else changes.
+
+**runFullTrust (warning, not blocking).** `runFullTrust` is a restricted
+capability, and Partner Center flags it. It is the normal and expected
+declaration for a packaged Win32 desktop app — without it the app cannot open
+the raw TCP and UDP sockets it needs to reach the receiver. Explain that in
+**Submission Options → Notes for certification**, for example:
+
+> This is a packaged Win32 (Electron) desktop app. runFullTrust is required to
+> open raw TCP and UDP sockets on the local network: the app discovers an
+> Integra/Onkyo receiver by UDP broadcast on port 60128 and controls it over a
+> TCP connection on the same port. No other restricted capability is used, and
+> the app makes no internet connections.
 
 ---
 

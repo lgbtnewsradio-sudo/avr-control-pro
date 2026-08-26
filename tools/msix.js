@@ -39,6 +39,12 @@ function findMakeAppx() {
 //    staged output is still what we need, so check for that rather than status.
 //    shell:true is required — Node refuses to spawn .cmd shims directly since
 //    the CVE-2024-27980 mitigation, and fails silently without it.
+// Clear the staging directory first. Without this, a failed stage leaves the
+// previous run's manifest and mapping in place and we silently pack stale bits
+// — which is exactly how a MinVersion change appeared to have no effect.
+const STAGE = path.join(DIST, '__appx-x64');
+fs.rmSync(STAGE, { recursive: true, force: true });
+
 console.log('> staging appx payload with electron-builder');
 const stage = spawnSync('npx electron-builder --win appx', {
   cwd: ROOT,
@@ -51,7 +57,7 @@ if (stage.error) {
   process.exit(1);
 }
 
-const mapping = path.join(DIST, '__appx-x64', 'mapping.txt');
+const mapping = path.join(STAGE, 'mapping.txt');
 if (!fs.existsSync(mapping)) {
   console.error('staging failed: no dist/__appx-x64/mapping.txt was produced');
   process.exit(1);
