@@ -1,4 +1,4 @@
-# AVR Control Pro
+# eISCP AVR Remote Control
 
 A Windows desktop app that controls Integra and Onkyo network receivers over IP, with a
 live replica of the receiver's front-panel display, full control of every input, zone,

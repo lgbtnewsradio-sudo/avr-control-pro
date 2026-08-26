@@ -310,7 +310,7 @@ function createFullWin() {
     // after the taskbar) and the classic 1024x768 baseline. A stricter minimum
     // would stop the window fitting on those screens at all.
     minWidth: 900, minHeight: 600,
-    title: 'AVR Control Pro',
+    title: 'eISCP AVR Remote Control',
   });
   fullWin.loadFile(path.join(__dirname, '..', 'renderer', 'full.html'));
   fullWin.on('closed', () => { fullWin = null; });
@@ -326,7 +326,7 @@ function createMiniWin() {
     resizable: false,
     alwaysOnTop: settings.miniPinned,
     skipTaskbar: false,
-    title: 'AVR Control — Mini',
+    title: 'eISCP AVR Remote — Mini',
   });
   miniWin.loadFile(path.join(__dirname, '..', 'renderer', 'mini.html'));
   miniWin.on('closed', () => { miniWin = null; });

@@ -1,4 +1,4 @@
-# Microsoft Store submission — AVR Control Pro at $5.99
+# Microsoft Store submission — eISCP AVR Remote Control at $5.99
 
 The package builds, the tile assets are generated, the privacy policy is published, and
 the app has been renamed off the Integra trademark. What's left needs your Partner Center
@@ -8,13 +8,13 @@ account.
 
 ## Naming — one step left in Partner Center
 
-The package now declares **AVR Control Pro** as its display name, which keeps
+The package now declares **eISCP AVR Remote Control** as its display name, which keeps
 both trademarks out of the customer-facing name. Store policy 10.1/10.2 covers
 using branding you do not own, and "Onkyo" and "Integra" are both Onkyo/Integra
 marks — a name built from them risks rejection at certification and a takedown
 later on a complaint.
 
-The reserved Store name is **eISCP AVR Remote Control** — "AVR Control Pro" was
+The reserved Store name is **eISCP AVR Remote Control** — "eISCP AVR Remote Control" was
 already taken by someone else. That is the name customers see, and the package
 declares it.
 
@@ -23,7 +23,7 @@ having it costs nothing and blocks anyone else taking it. Just don't use it as
 the displayed name.
 
 **Note the split:** the Store name is "eISCP AVR Remote Control" while the app's
-own window, installer and this repository still say "AVR Control Pro". That is
+own window, installer and this repository still say "eISCP AVR Remote Control". That is
 allowed, and the identity string is unaffected, but customers will see two names
 for one product. Aligning them means changing `productName` (which also renames
 the executable and resets the settings folder) plus the in-app wordmark and docs.
@@ -60,7 +60,7 @@ normal; branding with someone else's mark is what gets listings pulled.
 
 Register at <https://partner.microsoft.com/dashboard>. One-time registration fee;
 individual accounts are cheaper than company accounts and don't need business
-verification. Then create the app and **reserve the name "AVR Control Pro"**.
+verification. Then create the app and **reserve the name "eISCP AVR Remote Control"**.
 
 ### 2. Payout and tax profile — required before you can sell anything
 
@@ -88,7 +88,7 @@ and a rebuilt package has been verified to match them exactly:
 Store ID **9NNRM8HRC8SP** · <https://apps.microsoft.com/detail/9NNRM8HRC8SP>
 
 `displayName` must match a name you have **reserved**, or the package is rejected
-at upload. See the naming note above — reserving "AVR Control Pro" is the one
+at upload. See the naming note above — reserving "eISCP AVR Remote Control" is the one
 remaining Partner Center step.
 
 ### 4. Set the price to $5.99

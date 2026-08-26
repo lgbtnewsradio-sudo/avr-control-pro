@@ -1,6 +1,6 @@
 {
-  "name": "avr-control-pro",
-  "productName": "AVR Control Pro",
+  "name": "eiscp-avr-remote-control",
+  "productName": "eISCP AVR Remote Control",
   "version": "1.1.1",
   "description": "Desktop control for Integra and Onkyo network receivers - eISCP control, auto-discovery, front-panel replica, Spotify Connect display",
   "license": "SEE LICENSE IN LICENSE",
@@ -21,8 +21,8 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.avrcontrolpro.app",
-    "productName": "AVR Control Pro",
+    "appId": "com.blackdogdevelopers.eiscpavrremotecontrol",
+    "productName": "eISCP AVR Remote Control",
     "copyright": "Copyright (c) 2026 Black Dog Developers, LLC",
     "directories": {
       "output": "dist",
@@ -49,14 +49,14 @@
         }
       ],
       "icon": "build/icon.png",
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
+      "artifactName": "eiscp-avr-remote-control-${version}-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "AVR Control Pro"
+      "shortcutName": "eISCP AVR Remote Control"
     },
     "appx": {
       "identityName": "BlackDogDevelopersLLC.OnkyoIntegraAVRControl",

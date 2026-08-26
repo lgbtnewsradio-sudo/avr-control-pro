@@ -78,8 +78,8 @@ function pageHtml(width, height, layout) {
     ? `<div style="display:flex;align-items:center;gap:${height * 0.09}px;white-space:nowrap;">
          <div style="width:${height * 0.56}px;height:${height * 0.56}px;flex:none;">${markSvg(256)}</div>
          <div style="font-family:Segoe UI,sans-serif;color:#e8eaec;">
-           <div style="font-size:${height * 0.135}px;font-weight:800;letter-spacing:${height * 0.022}px;">AVR CONTROL</div>
-           <div style="font-size:${height * 0.058}px;letter-spacing:${height * 0.020}px;color:#7d848b;margin-top:${height * 0.035}px;">NETWORK RECEIVER REMOTE</div>
+           <div style="font-size:${height * 0.135}px;font-weight:800;letter-spacing:${height * 0.022}px;">eISCP AVR</div>
+           <div style="font-size:${height * 0.058}px;letter-spacing:${height * 0.020}px;color:#7d848b;margin-top:${height * 0.035}px;">REMOTE CONTROL</div>
          </div>
        </div>`
     : `<div style="width:${width}px;height:${height}px;">${markSvg(256)}</div>`;
