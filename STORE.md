@@ -14,14 +14,19 @@ using branding you do not own, and "Onkyo" and "Integra" are both Onkyo/Integra
 marks — a name built from them risks rejection at certification and a takedown
 later on a complaint.
 
-> **Before you upload:** Partner Center → your app → **Product management →
-> Manage app names** → reserve **AVR Control Pro**. Partner Center validates the
-> package display name against your reserved names, so the upload is rejected
-> until that name exists on the account. Then pick it as the listing name.
+The reserved Store name is **eISCP AVR Remote Control** — "AVR Control Pro" was
+already taken by someone else. That is the name customers see, and the package
+declares it.
 
 Your original reserved name, "Onkyo Integra AVR Control", can stay reserved —
 having it costs nothing and blocks anyone else taking it. Just don't use it as
 the displayed name.
+
+**Note the split:** the Store name is "eISCP AVR Remote Control" while the app's
+own window, installer and this repository still say "AVR Control Pro". That is
+allowed, and the identity string is unaffected, but customers will see two names
+for one product. Aligning them means changing `productName` (which also renames
+the executable and resets the settings folder) plus the in-app wordmark and docs.
 
 The identity string `BlackDogDevelopersLLC.OnkyoIntegraAVRControl` is derived
 from that first reserved name and is permanent, but it is internal plumbing that
@@ -78,7 +83,7 @@ and a rebuilt package has been verified to match them exactly:
 | `identityName`         | `BlackDogDevelopersLLC.OnkyoIntegraAVRControl`  |
 | `publisher`            | `CN=2143F09A-4C5B-4665-BDDB-40F66211FF64`       |
 | `publisherDisplayName` | `Black Dog Developers, LLC`                     |
-| `displayName`          | `AVR Control Pro` *(reserve this name first)*   |
+| `displayName`          | `eISCP AVR Remote Control` *(the reserved name)* |
 
 Store ID **9NNRM8HRC8SP** · <https://apps.microsoft.com/detail/9NNRM8HRC8SP>
 
