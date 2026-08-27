@@ -6,41 +6,25 @@ account.
 
 ---
 
-## Naming — one step left in Partner Center
+## Naming — settled
 
-The package now declares **eISCP AVR Remote Control** as its display name, which keeps
-both trademarks out of the customer-facing name. Store policy 10.1/10.2 covers
-using branding you do not own, and "Onkyo" and "Integra" are both Onkyo/Integra
-marks — a name built from them risks rejection at certification and a takedown
-later on a complaint.
+The reserved Store name is **eISCP AVR Remote Control**. "AVR Control Pro" was
+already taken by someone else, and the original reservation, "Onkyo Integra AVR
+Control", put two Onkyo/Integra trademarks in the customer-facing name — Store
+policy 10.1/10.2 covers branding you do not own, which risks rejection at
+certification and a takedown later on a complaint.
 
-The reserved Store name is **eISCP AVR Remote Control** — "eISCP AVR Remote Control" was
-already taken by someone else. That is the name customers see, and the package
-declares it.
+Everything customers see now uses the reserved name: the listing, the window
+title bar, the executable, the installer shortcut, the Store tiles, the site and
+the docs.
 
-Your original reserved name, "Onkyo Integra AVR Control", can stay reserved —
-having it costs nothing and blocks anyone else taking it. Just don't use it as
-the displayed name.
+Two things deliberately keep the old string, and neither is customer-facing:
 
-**Note the split:** the Store name is "eISCP AVR Remote Control" while the app's
-own window, installer and this repository still say "eISCP AVR Remote Control". That is
-allowed, and the identity string is unaffected, but customers will see two names
-for one product. Aligning them means changing `productName` (which also renames
-the executable and resets the settings folder) plus the in-app wordmark and docs.
-
-The identity string `BlackDogDevelopersLLC.OnkyoIntegraAVRControl` is derived
-from that first reserved name and is permanent, but it is internal plumbing that
-customers never see, so it does not need changing.
+- The identity `BlackDogDevelopersLLC.OnkyoIntegraAVRControl`, which is permanent
+  once reserved.
+- The repository and Pages URL slug, `avr-control-pro`.
 
 Compatibility belongs in the description, which is the safe place for it:
-
-> Works with Integra and Onkyo network receivers.
-
-The in-app title bar reads "AVR CONTROL PRO" followed by whichever model
-discovery found, and the repository and site use `avr-control-pro`, so
-everything now lines up on one name.
-
-Compatibility now lives in the description, which is the safe place for it:
 
 > Works with Integra and Onkyo network receivers.
 
@@ -48,9 +32,6 @@ Keep this line at the end of the Store description — it is already in the site
 
 > Not affiliated with, endorsed by, or sponsored by Onkyo, Integra, Spotify, or Microsoft.
 > All trademarks are the property of their respective owners.
-
-Do not put "Integra" or "Onkyo" in the **app name** field. Describing compatibility is
-normal; branding with someone else's mark is what gets listings pulled.
 
 ---
 
@@ -153,6 +134,68 @@ the raw TCP and UDP sockets it needs to reach the receiver. Explain that in
 > Integra/Onkyo receiver by UDP broadcast on port 60128 and controls it over a
 > TCP connection on the same port. No other restricted capability is used, and
 > the app makes no internet connections.
+
+### 8. Submission Options — two required fields
+
+**Why do you need the runFullTrust capability?**
+
+> eISCP AVR Remote Control is a packaged Win32 desktop application (Electron)
+> distributed via the Desktop Bridge. runFullTrust is required because it is a
+> full-trust Win32 executable rather than a UWP app, and specifically because it
+> must open raw TCP and UDP sockets on the local network, which the restricted
+> UWP networking capabilities do not allow for this use.
+>
+> How it is used:
+> 1. Discovery — the app sends a UDP broadcast datagram to port 60128 on the
+>    local subnet and listens for replies from Integra/Onkyo A/V receivers.
+> 2. Control — it opens a TCP client connection to the discovered receiver on
+>    port 60128 and exchanges eISCP protocol frames to read and set power, input,
+>    volume, listening mode, tone controls and zone settings.
+> 3. Album art — it performs a plain HTTP GET to the receiver's own built-in
+>    endpoint (http://<receiver-ip>/album_art.cgi) for the current cover image.
+>
+> All three are confined to the user's own local network and to receiver hardware
+> they own. The app makes no internet connections, has no account or telemetry,
+> collects no personal data, installs no services or drivers, and declares no
+> other restricted capability. It writes only a small settings file (receiver IP
+> and window preferences) to its per-user application data folder.
+
+**Notes for certification.** Do not leave this blank. A tester will run the app
+on a network with no receiver on it, see OFFLINE, and can reasonably conclude the
+app does not work.
+
+> IMPORTANT: this app controls physical hardware. It requires an Integra or Onkyo
+> network A/V receiver on the same local network — without one there is nothing
+> for it to connect to.
+>
+> If no receiver is available for testing, the app can still be evaluated:
+> - It launches to the full window with all controls visible.
+> - The Connection panel status reads OFFLINE or NO RESPONSE with a red indicator
+>   and retries on a backoff. This is correct behaviour, not a failure.
+> - AUTO DISCOVER performs a UDP broadcast and reports "No receivers found".
+> - A manual IP can be entered; an unreachable address shows NO RESPONSE rather
+>   than hanging or crashing.
+> - MINI VIEW switches to the compact window and back.
+> - No account, sign-in, or internet connection is required at any point.
+>
+> Tested against an Integra DRX-3.4. The eISCP protocol (TCP/UDP port 60128) is
+> shared across Integra and Onkyo network receivers.
+
+---
+
+## Local testing vs the Store package
+
+`dist/` holds two very different files:
+
+| file | purpose |
+| --- | --- |
+| `eiscp-avr-remote-control-<version>-x64.exe` | install locally to test; no certificate needed |
+| `eiscp-avr-remote-control-<version>-x64.msix` | upload to Partner Center; **unsigned by design** |
+
+Double-clicking the MSIX fails with `0x800B010A` ("publisher certificate could
+not be verified"). That is expected: Windows will only sideload a signed package,
+and the Store re-signs on ingestion. Signing it locally would break the publisher
+match and get the upload rejected, so leave it unsigned and use the .exe to test.
 
 ---
 
