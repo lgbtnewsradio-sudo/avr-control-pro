@@ -100,7 +100,7 @@ trial is live, add a line to the listing description saying so.
 npm run dist:store
 ```
 
-Produces `dist/avr-control-pro-1.1.1-x64.msix`. Upload under **Packages**. Don't sign it
+Produces `dist/eiscp-avr-remote-control-<version>-x64.msix`. Upload under **Packages**. Don't sign it
 yourself — the Store re-signs on ingestion.
 
 **Close the app before building.** If `dist/win-unpacked` is locked by a running
