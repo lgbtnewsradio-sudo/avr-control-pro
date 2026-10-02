@@ -62,9 +62,11 @@ function pushState() { broadcast('state', state); }
 /* eISCP message handling                                              */
 /* ------------------------------------------------------------------ */
 const hex = (d) => { const v = parseInt(d, 16); return Number.isNaN(v) ? 0 : v; };
-// signed level format: "+3" / "-A" / "00"
+// signed level format: "+3" / "-A" / "00" / "+0E" / "000". Returns null for
+// anything else — notably "N/A", the receiver's answer to a value it rejects,
+// which used to read as 0 and snap the slider to 0.0.
 function signedHex(d) {
-  if (!d) return 0;
+  if (!d || !/^[+-]?[0-9A-F]+$/i.test(d)) return null;
   if (d[0] === '+') return hex(d.slice(1));
   if (d[0] === '-') return -hex(d.slice(1));
   return hex(d);
@@ -155,14 +157,17 @@ client.on('message', ({ cmd, data }) => {
       break;
     case 'LMD': state.mode = data; break;
     case 'TFR': {
-      const b = data.match(/B([+-][0-9A-F]|00)/i);
-      const t = data.match(/T([+-][0-9A-F]|00)/i);
-      if (b) state.bass = signedHex(b[1]);
-      if (t) state.treble = signedHex(t[1]);
+      // Bass and treble share one reply, "B<val>T<val>" — whole dB, -A..+A on
+      // the DRX-3.4 (e.g. "B-9T-2"). Other models zero-pad ("+04"), so accept
+      // any number of hex digits. Anchored so a hex 'B' inside a value is
+      // never mistaken for the bass marker.
+      const m = /^(?:B([+-]?[0-9A-F]+))?(?:T([+-]?[0-9A-F]+))?$/.exec(data);
+      if (m && m[1] !== undefined) state.bass = signedHex(m[1]);
+      if (m && m[2] !== undefined) state.treble = signedHex(m[2]);
       break;
     }
-    case 'SWL': state.swl = signedHex(data); break;
-    case 'CTL': state.ctl = signedHex(data); break;
+    case 'SWL': { const v = signedHex(data); if (v !== null) state.swl = v; break; }
+    case 'CTL': { const v = signedHex(data); if (v !== null) state.ctl = v; break; }
     case 'DIM': state.dimmer = data; break;
     case 'SLP': state.sleep = data === 'OFF' ? 0 : hex(data); break;
     case 'HDO': state.hdo = data; break;

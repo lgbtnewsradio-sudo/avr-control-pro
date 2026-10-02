@@ -7,7 +7,13 @@ let pinned = true;
 let collapsed = false;
 
 document.querySelectorAll('[data-cmd]').forEach((b) =>
-  b.addEventListener('click', () => cmd(b.dataset.cmd)));
+  b.addEventListener('click', () => {
+    cmd(b.dataset.cmd);
+    // NTC transport commands change play/repeat/shuffle. The receiver usually
+    // pushes an NST of its own, but not always and not instantly, so ask —
+    // otherwise the button keeps showing the state from before the press.
+    if (/^NTC/.test(b.dataset.cmd)) setTimeout(() => cmd('NSTQSTN'), 400);
+  }));
 
 document.getElementById('wClose').onclick = () => window.integra.win('close');
 document.getElementById('btnFull').onclick = () => window.integra.setView('full');
@@ -94,8 +100,8 @@ function render(s) {
     delete art.dataset.src;
   }
   document.getElementById('btnPlayPause').innerHTML = n.status === 'P' ? '&#x23F8;' : '&#x25B6;';
-  document.getElementById('btnShuffle').classList.toggle('active', n.shuffle !== '-' && !!n.shuffle);
-  document.getElementById('btnRepeat').classList.toggle('active', n.repeat !== '-' && !!n.repeat);
+  setPlayToggle(document.getElementById('btnShuffle'), n.shuffle, 'Shuffle', SHUFFLE_LABEL, transportLive(s));
+  setPlayToggle(document.getElementById('btnRepeat'), n.repeat, 'Repeat', REPEAT_LABEL, transportLive(s));
   const t = parseTime(n.time);
   document.getElementById('mFill').style.width = t.tot ? (100 * t.cur / t.tot) + '%' : '0%';
 

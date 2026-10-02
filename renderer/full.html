@@ -75,6 +75,8 @@
   .transport { display: flex; gap: 10px; align-items: center; }
   .transport .btn.round.big { width: 54px; height: 54px; font-size: 20px; }
   .shuf-rep { display: flex; gap: 8px; }
+  /* shuffle/repeat hide when the source can't use them — drop the empty row too */
+  .shuf-rep:not(:has(.btn:not([hidden]))) { display: none; }
 
   /* Volume column */
   .vol-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -236,7 +238,6 @@
           <div class="shuf-rep">
             <button class="btn" id="btnShuffle" aria-label="Shuffle" data-cmd="NTCRANDOM">&#x1F500; SHUFFLE</button>
             <button class="btn" id="btnRepeat" aria-label="Repeat" data-cmd="NTCREPEAT">&#x1F501; REPEAT</button>
-            <button class="btn" data-cmd="NTCSTOP" aria-label="Stop">&#x23F9; STOP</button>
           </div>
         </div>
       </div>
@@ -292,10 +293,12 @@
       <div class="panel screws audio-panel">
         <h3>Audio Adjust</h3>
         <div class="audio-layout">
-          <!-- DRX reports these in half-dB units: raw = dB * 2 -->
+          <!-- Measured on the DRX-3.4: bass/treble (TFR) are whole dB, -10..+10, and the
+               receiver silently ignores anything outside that. Sub (SWL) and centre (CTL)
+               are half-dB: raw = dB * 2. -->
           <div class="fader-bank">
-            <div class="fader"><span class="val" id="adjBassVal">0</span><input type="range" class="vfader" id="adjBass" aria-label="Bass, decibels" min="-20" max="20" value="0"><label>BASS</label></div>
-            <div class="fader"><span class="val" id="adjTrebleVal">0</span><input type="range" class="vfader" id="adjTreble" aria-label="Treble, decibels" min="-20" max="20" value="0"><label>TREBLE</label></div>
+            <div class="fader"><span class="val" id="adjBassVal">0</span><input type="range" class="vfader" id="adjBass" aria-label="Bass, decibels" min="-10" max="10" value="0"><label>BASS</label></div>
+            <div class="fader"><span class="val" id="adjTrebleVal">0</span><input type="range" class="vfader" id="adjTreble" aria-label="Treble, decibels" min="-10" max="10" value="0"><label>TREBLE</label></div>
             <div class="fader"><span class="val" id="adjSwlVal">0</span><input type="range" class="vfader" id="adjSwl" aria-label="Subwoofer level, decibels" min="-30" max="24" value="0"><label>SUB</label></div>
             <div class="fader"><span class="val" id="adjCtlVal">0</span><input type="range" class="vfader" id="adjCtl" aria-label="Centre level, decibels" min="-24" max="24" value="0"><label>CENTER</label></div>
           </div>
