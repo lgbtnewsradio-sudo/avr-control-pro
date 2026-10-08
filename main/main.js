@@ -281,8 +281,12 @@ ipcMain.on('set-view', (_e, view) => {
 
 ipcMain.on('mini-resize', (_e, height) => {
   if (miniWin && !miniWin.isDestroyed()) {
-    const [w] = miniWin.getSize();
-    miniWin.setSize(w, Math.round(height), true);
+    // Not setSize: on Windows a non-resizable window gets its min and max size
+    // pinned to whatever it was last resized to, so after the first fit
+    // setSize was silently refused and COLLAPSE never shrank the window.
+    // setBounds isn't held to those limits.
+    const b = miniWin.getBounds();
+    miniWin.setBounds({ x: b.x, y: b.y, width: b.width, height: Math.round(height) });
   }
 });
 
