@@ -48,7 +48,7 @@
           ]
         }
       ],
-      "icon": "build/icon.png",
+      "icon": "build/icon.ico",
       "artifactName": "eiscp-avr-remote-control-${version}-${arch}.${ext}"
     },
     "nsis": {
