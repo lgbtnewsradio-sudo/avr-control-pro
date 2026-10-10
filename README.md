@@ -25,8 +25,8 @@ receivers use the same eISCP protocol and are likely to work, but are untested.
 - **Master volume** — draggable machined knob, scroll wheel, or step buttons, with the
   receiver's own dB readout and mute.
 - **Zone 2 and Zone 3** — power, source, volume and mute for each.
-- **Tone and setup** — bass, treble, subwoofer and centre on vertical faders in half-dB
-  steps, plus dimmer, HDMI output, Late Night, Music Optimizer and sleep timer.
+- **Tone and setup** — bass, treble, subwoofer and centre on vertical faders, each at
+  the receiver's own step size, plus dimmer, HDMI output, Late Night, Music Optimizer and sleep timer.
 - **Spotify Connect** — cover art, title, artist, album, progress, and full transport
   (play/pause, skip, shuffle, repeat, stop). No Spotify login: the receiver reports it.
 - **Mini view** — compact always-on-top window that collapses to just the display and
@@ -126,7 +126,10 @@ a UDP broadcast of `ECNQSTN` on the same port.
 
 Two behaviours are worth knowing about, both learned from a live DRX-3.4:
 
-- **Tone and level values are in half-decibel units.** A reported `+5` is +2.5 dB.
+- **Tone and level controls use different units.** Bass and treble (`TFR`) are whole
+  decibels, -10 to +10, and the receiver silently ignores values outside that range.
+  Subwoofer (`SWL`) and centre (`CTL`) levels are half-decibel units, so a reported
+  `-10` hex (-16) is -8.0 dB. Both were confirmed against the front-panel readout.
 - **Volume resolution varies by model, and the receiver will tell you.** `NRIQSTN`
   returns a device description whose zone list carries `volmax` and `volstep`; a
   `volstep` of `0` means half-dB steps, so the raw `MVL` value is double the number on

@@ -40,6 +40,11 @@ const LTN_LABEL = { '00': 'OFF', '01': 'LOW', '02': 'HIGH', '03': 'AUTO' };
 const cmd = (m) => window.integra.cmd(m);
 const h2 = (n) => Math.max(0, Math.round(n)).toString(16).toUpperCase().padStart(2, '0');
 const signed = (n) => (n === 0 ? '00' : (n > 0 ? '+' : '-') + Math.abs(n).toString(16).toUpperCase());
+// Subwoofer and centre levels (SWL/CTL) must be exactly three characters on the
+// DRX-3.4: sign plus two hex digits, zero as "000". A short value like "-E" or
+// "+2" is answered with N/A, so everything between -7.5 and +7.5 dB failed.
+const signedLevel = (n) => (n === 0 ? '000'
+  : (n > 0 ? '+' : '-') + Math.abs(n).toString(16).toUpperCase().padStart(2, '0'));
 /*
  * The receiver reports volume as a raw step count. On units with half-dB
  * resolution one raw step is 0.5, so the number on the front panel is
@@ -216,6 +221,44 @@ function parseTime(t) {
   const toSec = (x) => x.split(':').reduce((a, b) => a * 60 + (parseInt(b, 10) || 0), 0);
   const [cur, tot] = (t || '').split('/');
   return { cur: cur ? toSec(cur) : 0, tot: tot ? toSec(tot) : 0, curStr: cur || '', totStr: tot || '' };
+}
+
+// NST is three characters: play state, repeat, shuffle.
+//   repeat  '-' off   'R' all   'F' folder   '1' one   'x' not available
+//   shuffle '-' off   'S' all   'A' album    'F' folder   'x' not available
+// 'x' means the current source doesn't expose the control at all — Spotify
+// Connect reports it, because shuffle and repeat live in the Spotify app. It
+// is emphatically not "on", so it must never light the button.
+const REPEAT_LABEL = { '-': 'off', R: 'all', F: 'folder', '1': 'one' };
+const SHUFFLE_LABEL = { '-': 'off', S: 'on', A: 'album', F: 'folder' };
+
+// Shuffle and repeat only mean something while a network source has a track.
+// Idle, the receiver keeps reporting its last modes — the DRX-3.4 answers
+// "S1-1" (stopped, repeat one) with nothing loaded, on any input and in
+// standby — and ignores NTC presses, so the stale flags must not light up.
+const NET_INPUTS = ['2B', '2E', '29', '2A'];
+function transportLive(s) {
+  const n = (s && s.net) || {};
+  return !!(s && s.power) && NET_INPUTS.includes(s.input)
+    && (n.status === 'P' || n.status === 'p' || !!(n.title || '').trim());
+}
+
+// Hidden — not greyed out — whenever the receiver can't act on it. Tested on the
+// DRX-3.4 during real Spotify Connect playback: NST reads "Pxx1" (both 'x') and
+// NTCREPEAT / NTCRANDOM / NTCREP/SHF are all ignored, so a visible button would
+// only ever be a dead control. Any source that does report a mode shows it again.
+function setPlayToggle(btn, value, name, labels, live = true) {
+  if (!btn) return;
+  const v = value || 'x';
+  const available = live && v !== 'x';
+  btn.hidden = !available;
+  if (!available) { btn.classList.remove('active'); return; }
+  const on = v !== '-';
+  btn.classList.toggle('active', on);
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  const mode = labels[v];
+  btn.setAttribute('aria-label', `${name}, ${mode || 'on'}`);
+  btn.title = `${name}: ${mode || v}`;
 }
 
 /* ---------------- demo stub (browser preview outside Electron) ---------------- */

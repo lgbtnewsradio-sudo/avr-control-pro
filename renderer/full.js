@@ -8,7 +8,13 @@ let prog = { cur: 0, tot: 0 };
 
 /* ---------------- static wiring ---------------- */
 document.querySelectorAll('[data-cmd]').forEach((b) =>
-  b.addEventListener('click', () => cmd(b.dataset.cmd)));
+  b.addEventListener('click', () => {
+    cmd(b.dataset.cmd);
+    // NTC transport commands change play/repeat/shuffle. The receiver usually
+    // pushes an NST of its own, but not always and not instantly, so ask —
+    // otherwise the button keeps showing the state from before the press.
+    if (/^NTC/.test(b.dataset.cmd)) setTimeout(() => cmd('NSTQSTN'), 400);
+  }));
 
 document.getElementById('wMin').onclick = () => window.integra.win('min');
 document.getElementById('wMax').onclick = () => window.integra.win('max');
@@ -57,23 +63,49 @@ document.getElementById('tglSlp').onclick = () => {
   cmd(next === 0 ? 'SLPOFF' : 'SLP' + h2(next));
 };
 
-/* sliders — send on release/input with light debounce */
+/* sliders — send on release/input with light debounce.
+   A slider is shielded from receiver updates only while it is actually being
+   moved, plus a short grace period for the echo to land. It used to be
+   shielded for as long as it had focus, so a value the receiver rejected
+   stayed on screen until you touched a different slider — at which point
+   the first one snapped back, and it looked as if the new one had moved it. */
+const sliderBusyUntil = {};
+const sliderLatest = {};
+const SLIDER_GRACE = 900;
+
+function applySlider(id) {
+  const latest = sliderLatest[id];
+  if (!latest) return;
+  document.getElementById(id).value = latest.v;
+  document.getElementById(id + 'Val').textContent = latest.fmt ? latest.fmt(latest.v) : latest.v;
+}
+
 function bindSlider(id, send, fmt) {
   const el = document.getElementById(id);
   const val = document.getElementById(id + 'Val');
   let t = null;
+  const settle = (ms) => {
+    sliderBusyUntil[id] = Date.now() + ms;
+    // re-apply the receiver's value even if no further state push arrives
+    setTimeout(() => { if (Date.now() >= sliderBusyUntil[id]) applySlider(id); }, ms + 50);
+  };
+  el.addEventListener('pointerdown', () => { sliderBusyUntil[id] = Infinity; });
+  el.addEventListener('pointerup', () => settle(SLIDER_GRACE));
+  el.addEventListener('pointercancel', () => settle(SLIDER_GRACE));
   el.addEventListener('input', () => {
     val.textContent = fmt ? fmt(+el.value) : el.value;
+    if (sliderBusyUntil[id] !== Infinity) settle(SLIDER_GRACE + 600); // keyboard
     clearTimeout(t);
     t = setTimeout(() => send(+el.value), 120);
   });
   return el;
 }
 const halfDb = (v) => (v / 2).toFixed(1);
-bindSlider('adjBass', (v) => cmd('TFRB' + signed(v)), halfDb);
-bindSlider('adjTreble', (v) => cmd('TFRT' + signed(v)), halfDb);
-bindSlider('adjSwl', (v) => cmd('SWL' + signed(v)), halfDb);
-bindSlider('adjCtl', (v) => cmd('CTL' + signed(v)), halfDb);
+const wholeDb = (v) => v.toFixed(1);
+bindSlider('adjBass', (v) => cmd('TFRB' + signed(v)), wholeDb);
+bindSlider('adjTreble', (v) => cmd('TFRT' + signed(v)), wholeDb);
+bindSlider('adjSwl', (v) => cmd('SWL' + signedLevel(v)), halfDb);
+bindSlider('adjCtl', (v) => cmd('CTL' + signedLevel(v)), halfDb);
 bindSlider('z2Vol', (v) => cmd('ZVL' + h2(v)));
 bindSlider('z3Vol', (v) => cmd('VL3' + h2(v)));
 
@@ -200,11 +232,8 @@ window.integra.onDiscovered(renderDiscovered);
 
 /* ---------------- render ---------------- */
 function setSliderIfIdle(id, v, fmt) {
-  const el = document.getElementById(id);
-  if (document.activeElement !== el) {
-    el.value = v;
-    document.getElementById(id + 'Val').textContent = fmt ? fmt(v) : v;
-  }
+  sliderLatest[id] = { v, fmt };
+  if (Date.now() >= (sliderBusyUntil[id] || 0)) applySlider(id);
 }
 
 function render(s) {
@@ -252,8 +281,8 @@ function render(s) {
     img.style.display = 'none'; ph.style.display = '';
   }
   document.getElementById('btnPlayPause').innerHTML = n.status === 'P' ? '&#x23F8;' : '&#x25B6;';
-  document.getElementById('btnShuffle').classList.toggle('active', n.shuffle !== '-' && !!n.shuffle);
-  document.getElementById('btnRepeat').classList.toggle('active', n.repeat !== '-' && !!n.repeat);
+  setPlayToggle(document.getElementById('btnShuffle'), n.shuffle, 'Shuffle', SHUFFLE_LABEL, transportLive(s));
+  setPlayToggle(document.getElementById('btnRepeat'), n.repeat, 'Repeat', REPEAT_LABEL, transportLive(s));
 
   const t = parseTime(n.time);
   prog = { cur: t.cur, tot: t.tot };
@@ -285,8 +314,8 @@ function render(s) {
   if (s.z3.input) document.getElementById('z3Input').value = s.z3.input;
 
   /* audio adjust */
-  setSliderIfIdle('adjBass', s.bass, halfDb);
-  setSliderIfIdle('adjTreble', s.treble, halfDb);
+  setSliderIfIdle('adjBass', s.bass, wholeDb);
+  setSliderIfIdle('adjTreble', s.treble, wholeDb);
   setSliderIfIdle('adjSwl', s.swl, halfDb);
   setSliderIfIdle('adjCtl', s.ctl, halfDb);
   document.getElementById('dimVal').textContent = DIM_LABEL[s.dimmer] || s.dimmer;
@@ -318,4 +347,7 @@ function render(s) {
 }
 
 window.integra.onState(render);
-window.integra.getState().then(({ state }) => render(state));
+window.integra.getState().then(({ state, version }) => {
+  if (version) document.getElementById('brandVersion').textContent = 'v' + version;
+  render(state);
+});

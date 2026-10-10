@@ -75,6 +75,8 @@
   .transport { display: flex; gap: 10px; align-items: center; }
   .transport .btn.round.big { width: 54px; height: 54px; font-size: 20px; }
   .shuf-rep { display: flex; gap: 8px; }
+  /* shuffle/repeat hide when the source can't use them — drop the empty row too */
+  .shuf-rep:not(:has(.btn:not([hidden]))) { display: none; }
 
   /* Volume column */
   .vol-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -170,12 +172,54 @@
   .conn-hint b { color: #ff8b83; }
   .tuner-freq { font-family: Consolas, monospace; font-size: 15px; color: var(--vfd);
     text-shadow: 0 0 8px var(--vfd-glow); text-align: center; padding: 5px 0; }
+  /* ---------------- compact layout: whole window fits a 1080p screen ----------------
+     The full layout needed 1148px of height; a 1080p screen leaves ~1032px after the
+     taskbar, and the default window is 940px. This trims padding, gaps and the large
+     fixed-size pieces (art, knob, nav pad, faders). Text sizes are untouched — uniform
+     scaling would have taken the smallest labels down to ~7px. */
+  .content { padding: 8px 14px 10px; gap: 10px; }
+  .main-grid, .bottom-grid { gap: 10px; }
+  .content .panel { padding: 11px 12px; }
+  .content .panel h3 { margin-bottom: 7px; }
+
+  .vfd-strip .vfd-glass { min-height: 74px; padding-top: 7px; padding-bottom: 6px; }
+
+  .power-row { margin-bottom: 8px; }
+  .power-row .btn { padding: 8px; }
+  .inputs-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; grid-auto-rows: minmax(28px, 1fr); }
+  .inputs-grid .btn { padding: 6px 2px; letter-spacing: 0.3px; }
+  .setup-toggles { gap: 6px; }
+  .setup-toggles .btn { padding: 5px 4px; }
+
+  .player { gap: 8px; }
+  /* The cover takes whatever height the panel has spare (the row height is set
+     by the volume panel), so it grows without moving anything else. */
+  .player-panel { display: flex; flex-direction: column; }
+  .player-panel .player { flex: 1; min-height: 0; }
+  .art-frame { width: auto; height: auto; flex: 1 1 0; min-height: 184px; aspect-ratio: 1; }
+
+  .vol-panel { gap: 4px; }
+  /* zoom (not transform) so layout shrinks too; the knob's drag maths uses its
+     on-screen centre, so it keeps working unchanged */
+  .knob-ring { zoom: 0.68; }
+  .vol-readout { font-size: 26px; }
+  .zone-strip { padding-top: 6px; margin-top: 2px; }
+  .zone-strip .zhead { margin-bottom: 4px; }
+  .zone-strip select { padding-top: 5px; padding-bottom: 5px; }
+  .zone-strip .btn { padding-top: 5px; padding-bottom: 5px; }
+  .zone-strip input[type='range'] { height: 20px; }
+
+  /* rows stay short to save height; columns stay wide enough for QUICK / ENTER */
+  .navpad { grid-template-columns: repeat(3, 54px); grid-template-rows: repeat(3, 42px); margin: 0; }
+  .tuner-row { margin-top: 5px; }
+  input.vfader { min-height: 112px; }
+  .mode-wide .btn, .quick-modes .btn { padding: 8px 6px; }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="titlebar">
-    <div class="brand"><span class="logo">eISCP</span><span class="sub">AVR REMOTE CONTROL</span><span class="sub" id="brandModel"></span></div>
+    <div class="brand"><span class="logo">eISCP</span><span class="sub">AVR REMOTE CONTROL</span><span class="sub" id="brandVersion"></span><span class="sub" id="brandModel"></span></div>
     <div class="conn"><span class="led" id="connLed"></span><span id="connText">OFFLINE</span></div>
     <div class="spacer"></div>
     <button class="tbtn" id="btnMini" title="Switch to mini view">MINI VIEW</button>
@@ -186,7 +230,7 @@
 
   <div class="content">
     <!-- FRONT PANEL DISPLAY -->
-    <div class="panel screws vfd-strip" style="padding:10px 12px;">
+    <div class="panel screws vfd-strip" style="padding:8px 12px;">
       <div id="vfdHost" role="img" aria-label="Receiver front panel display"></div>
     </div>
 
@@ -213,7 +257,7 @@
       </div>
 
       <!-- CENTER: network player / spotify -->
-      <div class="panel screws">
+      <div class="panel screws player-panel">
         <h3>Network Player &nbsp;·&nbsp; Spotify Connect</h3>
         <div class="player">
           <div class="svc-badge" id="svcBadge" style="display:none;"><span class="dot"></span>SPOTIFY CONNECT</div>
@@ -236,7 +280,6 @@
           <div class="shuf-rep">
             <button class="btn" id="btnShuffle" aria-label="Shuffle" data-cmd="NTCRANDOM">&#x1F500; SHUFFLE</button>
             <button class="btn" id="btnRepeat" aria-label="Repeat" data-cmd="NTCREPEAT">&#x1F501; REPEAT</button>
-            <button class="btn" data-cmd="NTCSTOP" aria-label="Stop">&#x23F9; STOP</button>
           </div>
         </div>
       </div>
@@ -292,10 +335,12 @@
       <div class="panel screws audio-panel">
         <h3>Audio Adjust</h3>
         <div class="audio-layout">
-          <!-- DRX reports these in half-dB units: raw = dB * 2 -->
+          <!-- Measured on the DRX-3.4: bass/treble (TFR) are whole dB, -10..+10, and the
+               receiver silently ignores anything outside that. Sub (SWL) and centre (CTL)
+               are half-dB: raw = dB * 2. -->
           <div class="fader-bank">
-            <div class="fader"><span class="val" id="adjBassVal">0</span><input type="range" class="vfader" id="adjBass" aria-label="Bass, decibels" min="-20" max="20" value="0"><label>BASS</label></div>
-            <div class="fader"><span class="val" id="adjTrebleVal">0</span><input type="range" class="vfader" id="adjTreble" aria-label="Treble, decibels" min="-20" max="20" value="0"><label>TREBLE</label></div>
+            <div class="fader"><span class="val" id="adjBassVal">0</span><input type="range" class="vfader" id="adjBass" aria-label="Bass, decibels" min="-10" max="10" value="0"><label>BASS</label></div>
+            <div class="fader"><span class="val" id="adjTrebleVal">0</span><input type="range" class="vfader" id="adjTreble" aria-label="Treble, decibels" min="-10" max="10" value="0"><label>TREBLE</label></div>
             <div class="fader"><span class="val" id="adjSwlVal">0</span><input type="range" class="vfader" id="adjSwl" aria-label="Subwoofer level, decibels" min="-30" max="24" value="0"><label>SUB</label></div>
             <div class="fader"><span class="val" id="adjCtlVal">0</span><input type="range" class="vfader" id="adjCtl" aria-label="Centre level, decibels" min="-24" max="24" value="0"><label>CENTER</label></div>
           </div>
