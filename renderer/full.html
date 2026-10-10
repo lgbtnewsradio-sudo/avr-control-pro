@@ -192,7 +192,11 @@
   .setup-toggles .btn { padding: 5px 4px; }
 
   .player { gap: 8px; }
-  .art-frame { width: 184px; height: 184px; }
+  /* The cover takes whatever height the panel has spare (the row height is set
+     by the volume panel), so it grows without moving anything else. */
+  .player-panel { display: flex; flex-direction: column; }
+  .player-panel .player { flex: 1; min-height: 0; }
+  .art-frame { width: auto; height: auto; flex: 1 1 0; min-height: 184px; aspect-ratio: 1; }
 
   .vol-panel { gap: 4px; }
   /* zoom (not transform) so layout shrinks too; the knob's drag maths uses its
@@ -253,7 +257,7 @@
       </div>
 
       <!-- CENTER: network player / spotify -->
-      <div class="panel screws">
+      <div class="panel screws player-panel">
         <h3>Network Player &nbsp;·&nbsp; Spotify Connect</h3>
         <div class="player">
           <div class="svc-badge" id="svcBadge" style="display:none;"><span class="dot"></span>SPOTIFY CONNECT</div>
