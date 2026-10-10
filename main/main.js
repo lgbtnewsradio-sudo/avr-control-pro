@@ -219,7 +219,7 @@ client.on('message', ({ cmd, data }) => {
 /* ------------------------------------------------------------------ */
 /* IPC                                                                 */
 /* ------------------------------------------------------------------ */
-ipcMain.handle('get-state', () => ({ state, settings }));
+ipcMain.handle('get-state', () => ({ state, settings, version: app.getVersion() }));
 
 ipcMain.on('cmd', (_e, message) => client.send(message));
 

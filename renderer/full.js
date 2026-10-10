@@ -347,4 +347,7 @@ function render(s) {
 }
 
 window.integra.onState(render);
-window.integra.getState().then(({ state }) => render(state));
+window.integra.getState().then(({ state, version }) => {
+  if (version) document.getElementById('brandVersion').textContent = 'v' + version;
+  render(state);
+});
